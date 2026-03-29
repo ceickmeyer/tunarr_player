@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunarr Guide</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+    <header>
+        <h1>Tunarr TV Guide</h1>
+        <div class="time-display">Current Time: <span id="current-time"></span></div>
+        <nav class="header-nav">
+            <button id="shuffle-btn" class="nav-btn">⇀ Shuffle</button>
+            <a href="config.html" class="nav-btn">⚙ Config</a>
+            <a href="#" id="tunarr-link" target="_blank" class="nav-btn">Tunarr ↗</a>
+        </nav>
+    </header>
+
+    <main>
+        <div id="guide-container" class="guide-grid"></div>
+    </main>
+
+    <!-- Global floating tooltip -->
+    <div id="global-tooltip"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

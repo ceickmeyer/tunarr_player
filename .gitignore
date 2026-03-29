@@ -1,0 +1,13 @@
+# Personal launcher script — users provide their own
+tunarr.sh
+
+# Server logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db

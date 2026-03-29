@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunarr Player</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+    <header>
+        <div class="player-header">
+            <a href="index.html" class="back-button">← Guide</a>
+            <h1 id="channel-name">Channel</h1>
+            <div class="spacer"></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="player-section">
+            <div class="video-wrapper">
+                <video id="video-player" controls></video>
+            </div>
+            <div class="player-controls">
+                <div class="stream-info">
+                    <span id="current-program">Loading...</span>
+                </div>
+                <button id="pip-btn" class="pip-btn">⧉ Picture in Picture</button>
+                <button id="reload-stream" class="reload-btn">🔄 Reload</button>
+            </div>
+        </section>
+
+        <section class="guide-section">
+            <h2>All Channels — Next 4 Hours</h2>
+            <div id="player-guide" class="guide-grid"></div>
+        </section>
+    </main>
+
+    <!-- Global floating tooltip -->
+    <div id="global-tooltip"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/player.js"></script>
+</body>
+</html>

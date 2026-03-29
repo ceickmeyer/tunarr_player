@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunarr Player — Setup</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+</head>
+<body>
+    <header>
+        <h1>Tunarr Player</h1>
+        <div class="time-display">Setup</div>
+        <nav class="header-nav">
+            <a href="index.html" class="nav-btn">← Guide</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="config-wrap">
+
+            <div class="config-intro">
+                <h2>Quick Setup</h2>
+                <ol>
+                    <li>Start the local server: <code>python server.py</code> in the project folder</li>
+                    <li>Enter your Tunarr server URL and click <strong>Auto-fill</strong></li>
+                    <li>Adjust options, then click <strong>Save &amp; Open Guide</strong></li>
+                </ol>
+                <p class="hint" style="margin-top:0.75rem; padding-left:0">
+                    Tunarr must have CORS enabled (it does by default). XMLTV and M3U URLs
+                    are auto-filled from your server URL — only change them if you're using
+                    external guide sources.
+                </p>
+            </div>
+
+            <form id="config-form">
+
+                <section class="config-section">
+                    <h3>Server</h3>
+                    <div class="field-row">
+                        <label for="server-url">Tunarr Server URL</label>
+                        <div class="input-group">
+                            <input type="text" id="server-url"
+                                placeholder="http://192.168.1.x:8001" spellcheck="false">
+                            <button type="button" id="auto-fill-btn" class="reload-btn">Auto-fill</button>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label for="xmltv-url">XMLTV URL</label>
+                        <input type="text" id="xmltv-url"
+                            placeholder="http://192.168.1.x:8001/api/xmltv.xml" spellcheck="false">
+                    </div>
+                    <div class="field-row">
+                        <label for="m3u-url">M3U URL</label>
+                        <input type="text" id="m3u-url"
+                            placeholder="http://192.168.1.x:8001/api/channels.m3u" spellcheck="false">
+                    </div>
+                    <div id="connection-status" class="connection-status"></div>
+                </section>
+
+                <section class="config-section">
+                    <h3>Guide</h3>
+                    <div class="field-row field-row--inline">
+                        <label for="guide-hours">Hours to display</label>
+                        <input type="number" id="guide-hours" min="1" max="12" value="4">
+                    </div>
+                </section>
+
+                <section class="config-section">
+                    <h3>Options</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="show-bg-images" checked>
+                        <span>Show background artwork on program tiles</span>
+                    </label>
+                    <p class="hint">
+                        Loads poster images from your media server. First load is slower while
+                        images cache — instant on return visits.
+                    </p>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="noctalia-theme" checked>
+                        <span>Use Noctalia wallpaper-based theming</span>
+                    </label>
+                    <p class="hint">
+                        Reads colors from <code>~/.config/noctalia/colors.json</code> via the
+                        local server. Ignored if not present — falls back to the default theme.
+                    </p>
+                </section>
+
+                <div class="config-actions">
+                    <button type="submit" class="reload-btn">Save &amp; Open Guide</button>
+                    <button type="button" id="test-btn" class="pip-btn">Test Connection</button>
+                    <button type="button" id="clear-cache-btn" class="nav-btn">Clear Cache</button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script src="js/config.js"></script>
+</body>
+</html>
