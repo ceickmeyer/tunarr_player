@@ -1,6 +1,9 @@
 # Personal launcher script — users provide their own
 tunarr.sh
 
+# Server-persisted config (contains local IP/URLs)
+config.json
+
 # Server logs
 *.log
 

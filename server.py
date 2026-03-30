@@ -4,17 +4,48 @@
 import http.server
 import urllib.request
 import urllib.error
+import json
 import os
 import sys
 
 TUNARR_BASE = 'http://192.168.0.26:8001'
 PROXY_PREFIX = '/proxy'
-PORT = 8000
+PORT = 8002
 
 
 class TunarrHandler(http.server.SimpleHTTPRequestHandler):
+    def do_POST(self):
+        if self.path == '/config.json':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            try:
+                json.loads(body)  # validate
+                config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+                with open(config_path, 'wb') as f:
+                    f.write(body)
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.end_headers()
+                self.wfile.write(b'{"ok":true}')
+            except (json.JSONDecodeError, IOError) as e:
+                self.send_error(400, str(e))
+        else:
+            self.send_error(404)
+
     def do_GET(self):
-        if self.path == '/colors.json':
+        if self.path == '/config.json':
+            config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+            try:
+                with open(config_path, 'rb') as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            except FileNotFoundError:
+                self.send_error(404, 'Not configured yet')
+        elif self.path == '/colors.json':
             colors_path = os.path.expanduser('~/.config/noctalia/colors.json')
             try:
                 with open(colors_path, 'rb') as f:

@@ -9,19 +9,34 @@ const CONFIG = {
     noctaliaTheme:        true,
 };
 
-// Load user config from localStorage into CONFIG.
-// Returns false if no config has been saved yet (triggers redirect to config.html).
-function loadConfig() {
-    const saved = localStorage.getItem('tunarr_config');
-    if (!saved) return false;
-    const cfg = JSON.parse(saved);
-    if (!cfg.xmltvUrl || !cfg.m3uUrl) return false;
+// Load user config into CONFIG.
+// Checks localStorage first (fast), then falls back to server config.json.
+// Returns false if no config exists anywhere (triggers redirect to config.html).
+async function loadConfig() {
+    const local = localStorage.getItem('tunarr_config');
+    if (local) {
+        const cfg = JSON.parse(local);
+        if (cfg.xmltvUrl && cfg.m3uUrl) { _applyConfig(cfg); return true; }
+    }
+    try {
+        const resp = await fetch('/config.json');
+        if (!resp.ok) return false;
+        const cfg = await resp.json();
+        if (!cfg.xmltvUrl || !cfg.m3uUrl) return false;
+        localStorage.setItem('tunarr_config', JSON.stringify(cfg)); // cache locally
+        _applyConfig(cfg);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function _applyConfig(cfg) {
     CONFIG.xmltvUrl             = cfg.xmltvUrl;
     CONFIG.m3uUrl               = cfg.m3uUrl;
     CONFIG.guideHours           = cfg.guideHours           || 4;
     CONFIG.showBackgroundImages = cfg.showBackgroundImages  !== false;
     CONFIG.noctaliaTheme        = cfg.noctaliaTheme         !== false;
-    return true;
 }
 
 // ── Data fetching ─────────────────────────────────────────────────────────────

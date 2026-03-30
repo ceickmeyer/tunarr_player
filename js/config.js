@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Save
-    document.getElementById('config-form').addEventListener('submit', e => {
+    document.getElementById('config-form').addEventListener('submit', async e => {
         e.preventDefault();
         const xmltvUrl = document.getElementById('xmltv-url').value.trim();
         const m3uUrl   = document.getElementById('m3u-url').value.trim();
@@ -55,17 +55,27 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus('XMLTV and M3U URLs are required', 'error');
             return;
         }
-        localStorage.setItem('tunarr_config', JSON.stringify({
+        const config = {
             serverUrl:            document.getElementById('server-url').value.trim().replace(/\/$/, ''),
             xmltvUrl,
             m3uUrl,
             guideHours:           parseInt(document.getElementById('guide-hours').value) || 4,
             showBackgroundImages: document.getElementById('show-bg-images').checked,
             noctaliaTheme:        document.getElementById('noctalia-theme').checked,
-        }));
-        // Clear stale cache so new URLs are used immediately
+        };
+        localStorage.setItem('tunarr_config', JSON.stringify(config));
         localStorage.removeItem('tunarr_xmltv');
         localStorage.removeItem('tunarr_m3u');
+        // Persist to server so other devices pick it up automatically
+        try {
+            await fetch('/config.json', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config),
+            });
+        } catch (e) {
+            console.warn('Could not save config to server:', e);
+        }
         window.location.href = 'index.html';
     });
 
