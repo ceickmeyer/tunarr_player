@@ -2,7 +2,7 @@
 
 A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://github.com/chrisbenincasa/tunarr). No build tools, no frameworks — just HTML, CSS, and vanilla JavaScript.
 
-![Guide screenshot placeholder](https://via.placeholder.com/800x400/16120e/c88c32?text=Add+a+screenshot)
+![Guide screenshot placeholder](https://github.com/ceickmeyer/tunarr_player/blob/main/screenshot.png?raw=true)
 
 ## Features
 
@@ -28,7 +28,7 @@ A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/yourusername/tunarr-player
+git clone https://github.com/ceickmeyer/tunarr_player
 cd tunarr-player
 ```
 
