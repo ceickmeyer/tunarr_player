@@ -351,6 +351,9 @@ video { width: 100%; height: 100%; display: block; }
     cursor: pointer;
     transition: background 0.15s, transform 0.1s;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
 }
 
 .reload-btn:hover:not(:disabled) { background: var(--button-hover-bg); transform: scale(1.04); }
@@ -486,17 +489,32 @@ video { width: 100%; height: 100%; display: block; }
         flex-shrink: 0;
     }
 
+    /* ---- Player page layout ---- */
+    main { padding: 0; }
+
+    .player-section { margin-bottom: 0; }
+
+    .video-wrapper {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        margin-bottom: 0;
+    }
+
     /* ---- Player controls ---- */
     .player-controls {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        padding: 0.6rem;
+        flex-direction: column;
+        gap: 0.4rem;
+        padding: 0.5rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
     }
 
     .stream-info {
-        order: -1;
         width: 100%;
-        padding: 0 0 0.25rem;
+        padding: 0 0 0.4rem;
         border-bottom: 1px solid var(--border-color);
     }
 
@@ -504,10 +522,14 @@ video { width: 100%; height: 100%; display: block; }
 
     .reload-btn, .pip-btn {
         flex: 1;
-        padding: 0.75rem 0.5rem;
-        font-size: 0.88rem;
+        padding: 0.6rem 0.4rem;
+        font-size: 0.82rem;
         min-width: 0;
         touch-action: manipulation;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
     }
 
     /* ---- Player header ---- */
@@ -523,8 +545,7 @@ video { width: 100%; height: 100%; display: block; }
     .back-button { padding: 0.45rem 0.7rem; font-size: 0.85rem; }
 
     /* ---- Guide section ---- */
-    .guide-section { padding-top: 1rem; }
-    .guide-section h2 { font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .guide-section { padding-top: 0; }
 }
 
 /* ── Config page ─────────────────────────────────────────────────────────────*/

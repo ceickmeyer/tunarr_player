@@ -113,11 +113,24 @@ function renderGridLines() {
     }
 }
 
+function isMobile() {
+    return window.innerWidth <= 600;
+}
+
 function renderGuide() {
     const container = document.getElementById('guide-container');
     container.innerHTML = '';
 
+    if (isMobile()) {
+        renderGuideMobile(container);
+    } else {
+        renderGuideDesktop(container);
+    }
+}
+
+function renderGuideDesktop(container) {
     const end = windowEnd();
+    const now = new Date();
 
     for (const channel of m3uChannels) {
         const row = document.createElement('div');
@@ -138,11 +151,10 @@ function renderGuide() {
             if (startFrac >= 1 || endFrac <= 0) continue;
 
             const box = document.createElement('div');
-            box.className    = 'program-box';
-            box.style.left   = `${startFrac * 100}%`;
-            box.style.width  = `calc(${(endFrac - startFrac) * 100}% - 2px)`;
+            box.className   = 'program-box';
+            box.style.left  = `${startFrac * 100}%`;
+            box.style.width = `calc(${(endFrac - startFrac) * 100}% - 2px)`;
 
-            const now = new Date();
             if (prog.start <= now && now < prog.stop) box.classList.add('now-playing');
 
             box.innerHTML = `
@@ -152,14 +164,46 @@ function renderGuide() {
 
             if (CONFIG.showBackgroundImages && prog.image) {
                 const bg = document.createElement('div');
-                bg.className              = 'program-bg-image';
-                bg.style.backgroundImage  = `url("${prog.image}")`;
+                bg.className             = 'program-bg-image';
+                bg.style.backgroundImage = `url("${prog.image}")`;
                 box.insertBefore(bg, box.firstChild);
             }
 
             attachTooltip(box, prog, channel.name);
             box.addEventListener('click', () => launchChannel(channel));
+            timeline.appendChild(box);
+        }
 
+        row.appendChild(timeline);
+        container.appendChild(row);
+    }
+}
+
+function renderGuideMobile(container) {
+    const now = new Date();
+
+    for (const channel of m3uChannels) {
+        const row = document.createElement('div');
+        row.className = 'guide-row';
+
+        const label = document.createElement('div');
+        label.className   = 'channel-label';
+        label.textContent = channel.name;
+        label.title       = channel.name;
+        row.appendChild(label);
+
+        const timeline = document.createElement('div');
+        timeline.className = 'timeline';
+
+        const prog = getChannelPrograms(xmltvData, channel.id, now, new Date(now.getTime() + 1))[0];
+        if (prog) {
+            const box = document.createElement('div');
+            box.className = 'program-box now-playing';
+            box.innerHTML = `
+                <div class="program-title">${prog.title}</div>
+                <div class="program-time">${formatTime(prog.start)} – ${formatTime(prog.stop)}</div>
+            `;
+            box.addEventListener('click', () => launchChannel(channel));
             timeline.appendChild(box);
         }
 

@@ -210,13 +210,28 @@ function updateTimeIndicator() {
 
 // ── Full channel guide ────────────────────────────────────────────────────────
 
+function isMobile() {
+    return window.innerWidth <= 600;
+}
+
 function renderFullGuide() {
     if (!xmltvData || !m3uChannels.length) return;
 
     const container = document.getElementById('guide-container');
     container.innerHTML = '';
 
+    if (isMobile()) {
+        renderFullGuideMobile(container);
+    } else {
+        renderFullGuideDesktop(container);
+        renderGridLines();
+        updateTimeIndicator();
+    }
+}
+
+function renderFullGuideDesktop(container) {
     const end = windowEnd();
+    const now = new Date();
 
     for (const channel of m3uChannels) {
         const row = document.createElement('div');
@@ -242,7 +257,6 @@ function renderFullGuide() {
             box.style.left  = `${startFrac * 100}%`;
             box.style.width = `calc(${(endFrac - startFrac) * 100}% - 2px)`;
 
-            const now = new Date();
             if (prog.start <= now && now < prog.stop) box.classList.add('now-playing');
 
             box.innerHTML = `
@@ -265,9 +279,40 @@ function renderFullGuide() {
         row.appendChild(timeline);
         container.appendChild(row);
     }
+}
 
-    renderGridLines();
-    updateTimeIndicator();
+function renderFullGuideMobile(container) {
+    const now = new Date();
+
+    for (const channel of m3uChannels) {
+        const row = document.createElement('div');
+        row.className = 'guide-row';
+        if (channel.id === currentChannel.id) row.classList.add('active-channel');
+
+        const label = document.createElement('div');
+        label.className   = 'channel-label';
+        label.textContent = channel.name;
+        label.title       = channel.name;
+        row.appendChild(label);
+
+        const timeline = document.createElement('div');
+        timeline.className = 'timeline';
+
+        const prog = getChannelPrograms(xmltvData, channel.id, now, new Date(now.getTime() + 1))[0];
+        if (prog) {
+            const box = document.createElement('div');
+            box.className = 'program-box now-playing';
+            box.innerHTML = `
+                <div class="program-title">${prog.title}</div>
+                <div class="program-time">${formatTime(prog.start)} – ${formatTime(prog.stop)}</div>
+            `;
+            box.addEventListener('click', () => switchChannel(channel));
+            timeline.appendChild(box);
+        }
+
+        row.appendChild(timeline);
+        container.appendChild(row);
+    }
 }
 
 function showError(message) {
