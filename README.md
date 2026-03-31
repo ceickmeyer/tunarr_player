@@ -29,7 +29,7 @@ A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://
 
 ```bash
 git clone https://github.com/ceickmeyer/tunarr_player
-cd tunarr-player
+cd tunarr_player
 ```
 
 **2. Start the local server**

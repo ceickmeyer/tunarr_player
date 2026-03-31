@@ -7,7 +7,7 @@ let m3uChannels   = [];
 document.addEventListener('DOMContentLoaded', initializePlayer);
 
 async function initializePlayer() {
-    if (!loadConfig()) { window.location.href = 'config.html'; return; }
+    if (!await loadConfig()) { window.location.href = 'config.html'; return; }
 
     await applyNoctaliaColors();
 

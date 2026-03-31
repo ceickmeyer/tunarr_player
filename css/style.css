@@ -57,16 +57,101 @@ header h1 {
 
 /* ── Layout ──────────────────────────────────────────────────────────────────*/
 
-main { padding: 1.5rem 2rem; }
+main             { padding: 1.5rem 2rem; }
+main.guide-main  { padding: 0; }
 
-/* ── Guide grid ──────────────────────────────────────────────────────────────*/
 
-.guide-grid { display: flex; flex-direction: column; }
+/* ── Guide wrapper ───────────────────────────────────────────────────────────*/
+
+.guide-wrapper { display: flex; flex-direction: column; position: relative; }
+
+/* Sticky time ruler row */
+.guide-time-row {
+    display: flex;
+    height: 38px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--accent-primary);
+}
+
+.channel-label-spacer {
+    flex: 0 0 150px;
+    border-right: 1px solid var(--border-color);
+}
+
+.time-ruler {
+    flex: 1;
+    position: relative;
+    overflow: visible;
+}
+
+.time-marker {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    padding-left: 0.3rem;
+    pointer-events: none;
+}
+
+.current-time-bubble {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--accent-primary);
+    color: var(--accent-on-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.18rem 0.45rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Channel rows container */
+.guide-rows {
+    position: relative;
+}
+
+#guide-container {
+    position: relative;
+}
+
+/* Subtle vertical lines at each time interval */
+.guide-grid-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-color);
+    opacity: 0.5;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Vertical current-time indicator */
+.current-time-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--accent-primary);
+    opacity: 0.8;
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* ── Guide rows ──────────────────────────────────────────────────────────────*/
 
 .guide-row {
     display: flex;
     border-bottom: 1px solid var(--border-color);
-    min-height: 58px;
+    height: 62px;
 }
 
 .channel-label {
@@ -82,6 +167,9 @@ main { padding: 1.5rem 2rem; }
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+    z-index: 2;
+    background: var(--bg-secondary);
 }
 
 .guide-row.active-channel .channel-label {
@@ -92,27 +180,26 @@ main { padding: 1.5rem 2rem; }
 
 .timeline {
     flex: 1;
-    display: flex;
-    gap: 2px;
-    padding: 4px;
-    overflow-x: auto;
+    position: relative;
+    overflow: hidden;
     background: var(--bg-primary);
-    /* overflow-x here clips absolute children — tooltips use fixed positioning instead */
 }
 
 /* ── Program boxes ───────────────────────────────────────────────────────────*/
 
 .program-box {
-    flex: 1;
-    min-width: 180px;
-    padding: 0.6rem 0.75rem;
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    padding: 0.35rem 0.55rem;
     background: var(--program-bg);
     border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
-    position: relative;
     overflow: hidden;
+    box-sizing: border-box;
+    z-index: 2;
 }
 
 .program-bg-image {
@@ -317,9 +404,9 @@ video { width: 100%; height: 100%; display: block; }
 /* ── Tablet ───────────────────────────────────────────────────────────────────*/
 
 @media (max-width: 768px) {
-    .channel-label  { flex: 0 0 90px; font-size: 0.82rem; }
-    .program-box    { min-width: 150px; }
-    #global-tooltip { min-width: 220px; max-width: 280px; }
+    .channel-label-spacer { flex: 0 0 90px; }
+    .channel-label        { flex: 0 0 90px; font-size: 0.82rem; }
+    #global-tooltip       { min-width: 220px; max-width: 280px; }
 }
 
 /* ── Mobile — guide rows become vertical cards ───────────────────────────────*/
@@ -332,18 +419,19 @@ video { width: 100%; height: 100%; display: block; }
     header h1 { font-size: 1.15rem; }
     .header-nav { display: none; }
 
-    main { padding: 0.6rem; }
+    /* Hide time ruler and indicator on mobile */
+    .guide-time-row     { display: none; }
+    .current-time-line  { display: none !important; }
+    .guide-grid-line    { display: none; }
 
-    /* ---- Guide grid ---- */
-    .guide-grid { gap: 0.45rem; }
-
+    /* ---- Guide rows become cards ---- */
     .guide-row {
         flex-direction: column;
+        height: auto;
         border: 1px solid var(--border-color);
-        border-bottom: 1px solid var(--border-color);
         border-radius: 6px;
         overflow: hidden;
-        margin-bottom: 0;
+        margin-bottom: 0.4rem;
     }
 
     .channel-label {
@@ -357,29 +445,34 @@ video { width: 100%; height: 100%; display: block; }
         background: var(--bg-secondary);
     }
 
+    /* Reset timeline to vertical static flow */
     .timeline {
+        position: static;
+        height: auto;
+        display: flex;
         flex-direction: column;
         overflow-x: hidden;
-        padding: 0;
-        gap: 0;
         background: transparent;
     }
 
+    /* Reset program boxes to static full-width items */
     .program-box {
-        min-width: 0;
-        width: 100%;
+        position: static !important;
+        width: 100% !important;
+        left: auto !important;
+        top: auto !important;
+        bottom: auto !important;
         border-radius: 0;
         border: none;
         border-bottom: 1px solid var(--border-color);
-        border-left: none;
         padding: 0.6rem 0.9rem;
         display: flex;
         align-items: baseline;
         gap: 0.75rem;
     }
 
-    .program-box:last-child { border-bottom: none; }
-    .program-box.now-playing { border-left: 3px solid var(--accent-primary); }
+    .program-box:last-child   { border-bottom: none; }
+    .program-box.now-playing  { border-left: 3px solid var(--accent-primary); }
 
     .program-title {
         flex: 1;

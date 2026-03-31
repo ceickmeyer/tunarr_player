@@ -12,17 +12,32 @@
         <h1>Tunarr TV Guide</h1>
         <div class="time-display">Current Time: <span id="current-time"></span></div>
         <nav class="header-nav">
-            <button id="shuffle-btn" class="nav-btn">⇀ Shuffle</button>
+            <button id="shuffle-btn" class="nav-btn">🔀 Shuffle</button>
             <a href="config.html" class="nav-btn">⚙ Config</a>
             <a href="#" id="tunarr-link" target="_blank" class="nav-btn">Tunarr ↗</a>
         </nav>
     </header>
 
-    <main>
-        <div id="guide-container" class="guide-grid"></div>
+    <main class="guide-main">
+        <div class="guide-wrapper" id="guide-wrapper">
+
+            <!-- Time ruler: spacer | time markers | zoom+nav controls -->
+            <div class="guide-time-row">
+                <div class="channel-label-spacer"></div>
+                <div class="time-ruler" id="time-ruler">
+                    <!-- time markers + current-time bubble injected by JS -->
+                </div>
+            </div>
+
+            <!-- Channel rows -->
+            <div id="guide-container"></div>
+
+            <!-- Vertical time indicator — spans full guide-wrapper height -->
+            <div class="current-time-line" id="current-time-line"></div>
+
+        </div>
     </main>
 
-    <!-- Global floating tooltip -->
     <div id="global-tooltip"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
