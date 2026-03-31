@@ -14,6 +14,13 @@ async function initializeGuide() {
     const tunarrLink = document.getElementById('tunarr-link');
     if (tunarrLink && cfg.serverUrl) tunarrLink.href = cfg.serverUrl;
 
+    visibleHours = CONFIG.guideHours;
+    windowStart  = roundDownTo30(new Date());
+    renderTimeRuler();
+    updateTimeIndicator();
+
+    document.getElementById('shuffle-btn').addEventListener('click', shuffleChannel);
+
     xmltvData   = await fetchXMLTVData();
     m3uChannels = await fetchM3UData();
 
@@ -21,11 +28,6 @@ async function initializeGuide() {
         showError('Failed to load guide data. Check that Tunarr is reachable.');
         return;
     }
-
-    visibleHours = CONFIG.guideHours;
-    windowStart  = roundDownTo30(new Date());
-
-    document.getElementById('shuffle-btn').addEventListener('click', shuffleChannel);
 
     renderAll();
     updateTimeDisplay();
