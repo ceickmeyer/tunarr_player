@@ -1,8 +1,10 @@
-let hls           = null;
-let videoElement  = null;
-let xmltvData     = null;
+let hls            = null;
+let videoElement   = null;
+let xmltvData      = null;
 let currentChannel = null;
-let m3uChannels   = [];
+let m3uChannels    = [];
+let visibleHours;
+let windowStart;
 
 document.addEventListener('DOMContentLoaded', initializePlayer);
 
@@ -14,6 +16,11 @@ async function initializePlayer() {
     const channelJson = sessionStorage.getItem('selectedChannel');
     if (!channelJson) { window.location.href = 'index.html'; return; }
     currentChannel = JSON.parse(channelJson);
+
+    visibleHours = CONFIG.guideHours;
+    windowStart  = roundDownTo30(new Date());
+    renderTimeRuler();
+    updateTimeIndicator();
 
     [xmltvData, m3uChannels] = await Promise.all([fetchXMLTVData(), fetchM3UData()]);
 
@@ -27,6 +34,7 @@ async function initializePlayer() {
     updateCurrentProgram();
     renderFullGuide();
 
+    setInterval(updateTimeIndicator, 30000);
     setInterval(() => { updateCurrentProgram(); renderFullGuide(); }, CONFIG.updateInterval);
 }
 
@@ -115,16 +123,100 @@ function updateCurrentProgram() {
         : currentChannel.name;
 }
 
+// ── Time-grid helpers ─────────────────────────────────────────────────────────
+
+function roundDownTo30(date) {
+    const d = new Date(date);
+    d.setSeconds(0, 0);
+    d.setMinutes(d.getMinutes() >= 30 ? 30 : 0);
+    return d;
+}
+
+function windowEnd() {
+    return new Date(windowStart.getTime() + visibleHours * 3600000);
+}
+
+function timeToFrac(time) {
+    return (time - windowStart) / (visibleHours * 3600000);
+}
+
+function renderTimeRuler() {
+    const ruler = document.getElementById('time-ruler');
+    ruler.innerHTML = '';
+
+    const intervalMs  = visibleHours <= 3 ? 30 * 60000 : 60 * 60000;
+    const endMs       = windowEnd().getTime();
+    const firstMarker = Math.ceil(windowStart.getTime() / intervalMs) * intervalMs;
+
+    for (let t = firstMarker; t < endMs; t += intervalMs) {
+        const frac = timeToFrac(new Date(t));
+        if (frac < 0 || frac > 1) continue;
+        const marker = document.createElement('div');
+        marker.className  = 'time-marker';
+        marker.style.left = `${frac * 100}%`;
+        marker.textContent = formatTime(new Date(t));
+        ruler.appendChild(marker);
+    }
+
+    const now     = new Date();
+    const nowFrac = timeToFrac(now);
+    if (nowFrac >= 0 && nowFrac <= 1) {
+        const bubble = document.createElement('div');
+        bubble.id        = 'current-time-bubble';
+        bubble.className = 'current-time-bubble';
+        bubble.style.left = `${nowFrac * 100}%`;
+        bubble.textContent = formatTime(now);
+        ruler.appendChild(bubble);
+    }
+}
+
+function renderGridLines() {
+    const container = document.getElementById('guide-container');
+    container.querySelectorAll('.guide-grid-line').forEach(el => el.remove());
+
+    const intervalMs  = visibleHours <= 3 ? 30 * 60000 : 60 * 60000;
+    const endMs       = windowEnd().getTime();
+    const firstMarker = Math.ceil(windowStart.getTime() / intervalMs) * intervalMs;
+
+    for (let t = firstMarker; t < endMs; t += intervalMs) {
+        const frac = timeToFrac(new Date(t));
+        if (frac < 0 || frac > 1) continue;
+        const line = document.createElement('div');
+        line.className  = 'guide-grid-line';
+        line.style.left = `calc(150px + ${frac.toFixed(6)} * (100% - 150px))`;
+        container.appendChild(line);
+    }
+}
+
+function updateTimeIndicator() {
+    const now    = new Date();
+    const frac   = timeToFrac(now);
+    const line   = document.getElementById('current-time-line');
+    const bubble = document.getElementById('current-time-bubble');
+
+    if (line) {
+        if (frac < 0 || frac > 1) {
+            line.style.display = 'none';
+        } else {
+            line.style.display = 'block';
+            line.style.left    = `calc(150px + ${frac.toFixed(6)} * (100% - 150px))`;
+        }
+    }
+    if (bubble) {
+        bubble.textContent = formatTime(now);
+        bubble.style.left  = `${frac * 100}%`;
+    }
+}
+
 // ── Full channel guide ────────────────────────────────────────────────────────
 
 function renderFullGuide() {
     if (!xmltvData || !m3uChannels.length) return;
 
-    const container = document.getElementById('player-guide');
+    const container = document.getElementById('guide-container');
     container.innerHTML = '';
 
-    const now     = new Date();
-    const endTime = new Date(now.getTime() + CONFIG.guideHours * 3600000);
+    const end = windowEnd();
 
     for (const channel of m3uChannels) {
         const row = document.createElement('div');
@@ -132,18 +224,25 @@ function renderFullGuide() {
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
 
         const label = document.createElement('div');
-        label.className = 'channel-label';
+        label.className   = 'channel-label';
         label.textContent = channel.name;
-        label.title = channel.name;
+        label.title       = channel.name;
         row.appendChild(label);
 
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
 
-        for (const prog of getChannelPrograms(xmltvData, channel.id, now, endTime)) {
-            const box = document.createElement('div');
-            box.className = 'program-box';
+        for (const prog of getChannelPrograms(xmltvData, channel.id, windowStart, end)) {
+            const startFrac = Math.max(timeToFrac(prog.start), 0);
+            const endFrac   = Math.min(timeToFrac(prog.stop),  1);
+            if (startFrac >= 1 || endFrac <= 0) continue;
 
+            const box = document.createElement('div');
+            box.className   = 'program-box';
+            box.style.left  = `${startFrac * 100}%`;
+            box.style.width = `calc(${(endFrac - startFrac) * 100}% - 2px)`;
+
+            const now = new Date();
             if (prog.start <= now && now < prog.stop) box.classList.add('now-playing');
 
             box.innerHTML = `
@@ -153,7 +252,7 @@ function renderFullGuide() {
 
             if (CONFIG.showBackgroundImages && prog.image) {
                 const bg = document.createElement('div');
-                bg.className = 'program-bg-image';
+                bg.className             = 'program-bg-image';
                 bg.style.backgroundImage = `url("${prog.image}")`;
                 box.insertBefore(bg, box.firstChild);
             }
@@ -166,6 +265,9 @@ function renderFullGuide() {
         row.appendChild(timeline);
         container.appendChild(row);
     }
+
+    renderGridLines();
+    updateTimeIndicator();
 }
 
 function showError(message) {

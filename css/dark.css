@@ -1,32 +1,32 @@
-/* Cappuccino dark — default theme, overridden at runtime by applyNoctaliaColors() */
+/* Catppuccin Mocha — default theme, overridden at runtime by applyNoctaliaColors() */
 :root {
-    --bg-primary:             #16120e;
-    --bg-secondary:           #211810;
-    --text-primary:           #ece0cf;
-    --text-secondary:         #a08060;
-    --border-color:           #3a2a1a;
+    --bg-primary:             #1e1e2e;
+    --bg-secondary:           #181825;
+    --text-primary:           #cdd6f4;
+    --text-secondary:         #6c7086;
+    --border-color:           #313244;
 
-    --program-bg:             #211810;
-    --program-hover-bg:       rgba(200,140,50,0.08);
-    --current-program-bg:     rgba(200,140,50,0.13);
-    --current-program-border: #c88c32;
+    --program-bg:             #181825;
+    --program-hover-bg:       rgba(137,180,250,0.08);
+    --current-program-bg:     rgba(137,180,250,0.12);
+    --current-program-border: #89b4fa;
 
-    --button-bg:              #c88c32;
-    --button-hover-bg:        #e0a848;
-    --button-text:            #16120e;
+    --button-bg:              #89b4fa;
+    --button-hover-bg:        #b4befe;
+    --button-text:            #1e1e2e;
 
-    --controls-bg:            #16120e;
-    --tooltip-bg:             #211810;
-    --tooltip-text:           #ece0cf;
+    --controls-bg:            #1e1e2e;
+    --tooltip-bg:             #181825;
+    --tooltip-text:           #cdd6f4;
 
     --shadow:                 rgba(0,0,0,0.85);
-    --error-bg:               rgba(200,80,50,0.18);
-    --error-text:             #f08858;
+    --error-bg:               rgba(243,139,168,0.15);
+    --error-text:             #f38ba8;
 
-    --accent-primary:         #c88c32;
-    --accent-secondary:       #a08060;
-    --accent-tertiary:        #e0a848;
-    --accent-on-primary:      #16120e;
+    --accent-primary:         #89b4fa;
+    --accent-secondary:       #cba6f7;
+    --accent-tertiary:        #b4befe;
+    --accent-on-primary:      #1e1e2e;
 }
 
 body    { background: var(--bg-primary);   color: var(--text-primary); }
