@@ -95,10 +95,10 @@ function setupPiP() {
 function reloadStream() {
     const btn = document.getElementById('reload-stream');
     btn.disabled = true;
-    btn.textContent = '⏳ Reloading...';
+    btn.style.opacity = '0.55';
     if (hls) { hls.destroy(); hls = null; }
     setupVideoPlayer(currentChannel.url);
-    setTimeout(() => { btn.disabled = false; btn.textContent = '🔄 Reload Stream'; }, 2000);
+    setTimeout(() => { btn.disabled = false; btn.style.opacity = ''; }, 2000);
 }
 
 function switchChannel(channel) {

@@ -426,6 +426,7 @@ video { width: 100%; height: 100%; display: block; }
     .guide-time-row     { display: none; }
     .current-time-line  { display: none !important; }
     .guide-grid-line    { display: none; }
+    .program-bg-image   { display: none !important; }
 
     /* ---- Guide rows become cards ---- */
     .guide-row {
