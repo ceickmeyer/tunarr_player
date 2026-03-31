@@ -15,7 +15,7 @@ A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://
 - Picture-in-Picture button
 - Caches guide data locally (5-minute TTL) for instant reloads
 - Mobile-friendly responsive layout
-- [Noctalia](https://github.com/linkfrg/noctalia) wallpaper-based theming (optional) — falls back to a cappuccino dark theme
+- [Noctalia](https://noctalia.dev/) wallpaper-based theming (optional) — falls back to a cappuccino dark theme
 
 ## Requirements
 
@@ -59,11 +59,11 @@ The setup page (`/config.html`) lets you change:
 | Background artwork | Toggle blurred poster images on program tiles |
 | Noctalia theming | Auto-apply colors from Noctalia (Linux/Hyprland only) |
 
-Settings are stored in your browser's `localStorage`. Use the **Clear Cache** button after changing your server URL.
+Settings are stored in your browser's `localStorage`. Use the **Clear Cache** button after changing your server URL. CTRL+Shift+R after any pull should resolve changes.
 
 ## Noctalia Theming (optional)
 
-If you use [Noctalia](https://github.com/linkfrg/noctalia) for wallpaper-based color schemes, the app will automatically read `~/.config/noctalia/colors.json` via the local server and apply your current palette. Enable the toggle in config. If the file isn't present the app falls back to the default cappuccino dark theme.
+If you use [Noctalia](https://noctalia.dev/) for wallpaper-based color schemes, the app will automatically read `~/.config/noctalia/colors.json` via the local server and apply your current palette. Enable the toggle in config. If the file isn't present the app falls back to the default cappuccino dark theme.
 
 ## Project Structure
 
