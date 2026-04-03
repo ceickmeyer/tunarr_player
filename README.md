@@ -3,9 +3,11 @@
 A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://github.com/chrisbenincasa/tunarr). No build tools, no frameworks — just HTML, CSS, and vanilla JavaScript. **Made with Claude Code**, edited by a human. Does not have anything that could compromise your system, it just plays video.
 
 **Desktop**
+
 ![Desktop guide screenshot](https://github.com/ceickmeyer/tunarr_player/blob/main/screenshot.png?raw=true)
 
 **Mobile**
+
 ![Mobile guide screenshot](https://github.com/ceickmeyer/tunarr_player/blob/main/mobile_screenshot.png?raw=true)
 
 ## Features
