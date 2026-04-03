@@ -2,20 +2,24 @@
 
 A lightweight, dark-mode TV guide and HLS streaming player for [Tunarr](https://github.com/chrisbenincasa/tunarr). No build tools, no frameworks — just HTML, CSS, and vanilla JavaScript. **Made with Claude Code**, edited by a human. Does not have anything that could compromise your system, it just plays video.
 
-![Guide screenshot placeholder](https://github.com/ceickmeyer/tunarr_player/blob/main/screenshot.png?raw=true)
+**Desktop**
+![Desktop guide screenshot](https://github.com/ceickmeyer/tunarr_player/blob/main/screenshot.png?raw=true)
+
+**Mobile**
+![Mobile guide screenshot](https://github.com/ceickmeyer/tunarr_player/blob/main/mobile_screenshot.png?raw=true)
 
 ## Features
 
-- 4-hour rolling TV guide with live channel data
+- Time-based TV guide with a sticky time ruler and live current-time indicator
 - Click any program to open a player with the full channel guide below
 - HLS streaming via [HLS.js](https://github.com/video-dev/hls.js)
-- Blurred poster artwork as program tile backgrounds
+- Blurred poster artwork as program tile backgrounds (desktop only)
 - Hover tooltips with description, duration, and rating
 - Shuffle button to pick a random channel
 - Picture-in-Picture button
 - Caches guide data locally (5-minute TTL) for instant reloads
-- Mobile-friendly responsive layout
-- [Noctalia](https://noctalia.dev/) wallpaper-based theming (optional) — falls back to a cappuccino dark theme
+- Mobile layout shows current program, progress bar, time remaining, and next up per channel
+- [Noctalia](https://noctalia.dev/) wallpaper-based theming (optional) — falls back to Catppuccin Mocha dark theme
 
 ## Requirements
 
@@ -37,8 +41,6 @@ cd tunarr_player
 ```bash
 python server.py
 ```
-
-The server runs on `http://localhost:8000`.
 
 **3. Open the app and configure it**
 
@@ -63,7 +65,7 @@ Settings are stored in your browser's `localStorage`. Use the **Clear Cache** bu
 
 ## Noctalia Theming (optional)
 
-If you use [Noctalia](https://noctalia.dev/) for wallpaper-based color schemes, the app will automatically read `~/.config/noctalia/colors.json` via the local server and apply your current palette. Enable the toggle in config. If the file isn't present the app falls back to the default cappuccino dark theme.
+If you use [Noctalia](https://noctalia.dev/) for wallpaper-based color schemes, the app will automatically read `~/.config/noctalia/colors.json` via the local server and apply your current palette. Enable the toggle in config. If the file isn't present the app falls back to the default Catppuccin Mocha dark theme.
 
 ## Project Structure
 
@@ -75,7 +77,7 @@ tunarr-player/
 ├── server.py       # Local file server + Noctalia colors proxy
 ├── css/
 │   ├── style.css   # Layout and component styles
-│   └── dark.css    # Default cappuccino theme (overridden by Noctalia)
+│   └── dark.css    # Default Catppuccin Mocha theme (overridden by Noctalia)
 └── js/
     ├── utils.js    # Config, data fetching, caching, theming, tooltips
     ├── app.js      # Guide page logic
@@ -87,4 +89,3 @@ tunarr-player/
 
 - [Tunarr](https://github.com/chrisbenincasa/tunarr) — the IPTV server this is built for
 - [HLS.js](https://github.com/video-dev/hls.js) — HLS streaming in the browser (Apache 2.0)
-# tunarr_player
