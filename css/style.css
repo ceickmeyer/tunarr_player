@@ -469,25 +469,70 @@ video { width: 100%; height: 100%; display: block; }
         border-radius: 0;
         border: none;
         border-bottom: 1px solid var(--border-color);
-        padding: 0.6rem 0.9rem;
-        display: flex;
-        align-items: baseline;
-        gap: 0.75rem;
+        padding: 0;
+        display: block;
     }
 
-    .program-box:last-child   { border-bottom: none; }
-    .program-box.now-playing  { border-left: 3px solid var(--accent-primary); }
+    .program-box:last-child  { border-bottom: none; }
+    .program-box.now-playing { border-left: 3px solid var(--accent-primary); }
 
     .program-title {
-        flex: 1;
         white-space: normal;
-        font-size: 0.88rem;
+        font-size: 0.92rem;
+        margin-bottom: 0.2rem;
     }
 
     .program-time {
         white-space: nowrap;
-        font-size: 0.72rem;
+        font-size: 0.75rem;
         flex-shrink: 0;
+    }
+
+    .mobile-program-card { cursor: pointer; }
+
+    .mobile-prog-main {
+        padding: 0.6rem 0.9rem 0.45rem;
+    }
+
+    .mobile-prog-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .mobile-time-left {
+        font-size: 0.72rem;
+        color: var(--accent-primary);
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .mobile-progress-bar {
+        height: 3px;
+        background: var(--border-color);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .mobile-progress-fill {
+        height: 100%;
+        background: var(--accent-primary);
+        border-radius: 2px;
+        transition: width 1s linear;
+    }
+
+    .mobile-next {
+        padding: 0.35rem 0.9rem;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border-color);
+    }
+
+    .mobile-next span {
+        color: var(--text-primary);
     }
 
     /* ---- Player page layout ---- */

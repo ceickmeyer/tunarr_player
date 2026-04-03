@@ -298,13 +298,29 @@ function renderFullGuideMobile(container) {
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
 
-        const prog = getChannelPrograms(xmltvData, channel.id, now, new Date(now.getTime() + 1))[0];
+        const lookahead = new Date(now.getTime() + 4 * 3600000);
+        const programs  = getChannelPrograms(xmltvData, channel.id, now, lookahead);
+        const prog      = programs[0];
+        const next      = programs[1];
+
         if (prog) {
+            const elapsed  = now - prog.start;
+            const duration = prog.stop - prog.start;
+            const pct      = Math.min(100, Math.max(0, (elapsed / duration) * 100));
+            const minsLeft = Math.round((prog.stop - now) / 60000);
+
             const box = document.createElement('div');
-            box.className = 'program-box now-playing';
+            box.className = 'program-box now-playing mobile-program-card';
             box.innerHTML = `
-                <div class="program-title">${prog.title}</div>
-                <div class="program-time">${formatTime(prog.start)} – ${formatTime(prog.stop)}</div>
+                <div class="mobile-prog-main">
+                    <div class="program-title">${prog.title}</div>
+                    <div class="mobile-prog-meta">
+                        <span class="program-time">${formatTime(prog.start)} – ${formatTime(prog.stop)}</span>
+                        <span class="mobile-time-left">${minsLeft} min left</span>
+                    </div>
+                    <div class="mobile-progress-bar"><div class="mobile-progress-fill" style="width:${pct}%"></div></div>
+                </div>
+                ${next ? `<div class="mobile-next">Next: <span>${next.title}</span> · ${formatTime(next.start)}</div>` : ''}
             `;
             box.addEventListener('click', () => switchChannel(channel));
             timeline.appendChild(box);
