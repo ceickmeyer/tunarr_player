@@ -1,14 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Populate form from saved config
     const saved = localStorage.getItem('tunarr_config');
+    const savedTheme = saved ? (JSON.parse(saved).colorTheme || 'mocha') : 'mocha';
     if (saved) {
         const cfg = JSON.parse(saved);
         setVal('server-url',     cfg.serverUrl   || '');
         setVal('xmltv-url',      cfg.xmltvUrl    || '');
         setVal('m3u-url',        cfg.m3uUrl      || '');
         setVal('guide-hours',    cfg.guideHours  || 4);
-        document.getElementById('show-bg-images').checked = cfg.showBackgroundImages !== false;
-        document.getElementById('noctalia-theme').checked = cfg.noctaliaTheme !== false;
+        document.getElementById('show-bg-images').checked      = cfg.showBackgroundImages !== false;
+        document.getElementById('show-channel-names').checked   = cfg.showChannelNames     !== false;
+        document.getElementById('show-channel-icons').checked   = cfg.showChannelIcons     === true;
+        document.getElementById('noctalia-theme').checked       = cfg.noctaliaTheme        !== false;
+    }
+
+    // Theme picker — mark active button and handle live preview
+    setActiveThemeBtn(savedTheme);
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setActiveThemeBtn(btn.dataset.theme);
+            applyColorTheme(btn.dataset.theme);
+        });
+    });
+
+    function setActiveThemeBtn(theme) {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        const active = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
+        if (active) active.classList.add('active');
     }
 
     // Auto-fill XMLTV + M3U from server URL
@@ -61,7 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
             m3uUrl,
             guideHours:           parseInt(document.getElementById('guide-hours').value) || 4,
             showBackgroundImages: document.getElementById('show-bg-images').checked,
+            showChannelNames:     document.getElementById('show-channel-names').checked,
+            showChannelIcons:     document.getElementById('show-channel-icons').checked,
             noctaliaTheme:        document.getElementById('noctalia-theme').checked,
+            colorTheme:           document.querySelector('.theme-btn.active')?.dataset.theme || 'mocha',
         };
         localStorage.setItem('tunarr_config', JSON.stringify(config));
         localStorage.removeItem('tunarr_xmltv');

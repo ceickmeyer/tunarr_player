@@ -136,11 +136,7 @@ function renderGuideDesktop(container) {
         const row = document.createElement('div');
         row.className = 'guide-row';
 
-        const label = document.createElement('div');
-        label.className   = 'channel-label';
-        label.textContent = channel.name;
-        label.title       = channel.name;
-        row.appendChild(label);
+        row.appendChild(buildChannelLabel(channel));
 
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
@@ -186,11 +182,7 @@ function renderGuideMobile(container) {
         const row = document.createElement('div');
         row.className = 'guide-row';
 
-        const label = document.createElement('div');
-        label.className   = 'channel-label';
-        label.textContent = channel.name;
-        label.title       = channel.name;
-        row.appendChild(label);
+        row.appendChild(buildChannelLabel(channel));
 
         const timeline = document.createElement('div');
         timeline.className = 'timeline';

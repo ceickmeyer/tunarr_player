@@ -33,3 +33,96 @@ body    { background: var(--bg-primary);   color: var(--text-primary); }
 header  { background: var(--bg-secondary); }
 a       { color: var(--accent-primary); }
 a:hover { color: var(--accent-tertiary); }
+
+/* ── Catppuccin Latte ────────────────────────────────────────────────────────*/
+[data-theme="latte"] {
+    --bg-primary:             #eff1f5;
+    --bg-secondary:           #e6e9ef;
+    --text-primary:           #4c4f69;
+    --text-secondary:         #8c8fa1;
+    --border-color:           #ccd0da;
+
+    --program-bg:             #dce0e8;
+    --program-hover-bg:       rgba(30,102,245,0.08);
+    --current-program-bg:     rgba(30,102,245,0.10);
+    --current-program-border: #1e66f5;
+
+    --button-bg:              #1e66f5;
+    --button-hover-bg:        #7287fd;
+    --button-text:            #eff1f5;
+
+    --controls-bg:            #eff1f5;
+    --tooltip-bg:             #dce0e8;
+    --tooltip-text:           #4c4f69;
+
+    --shadow:                 rgba(76,79,105,0.25);
+    --error-bg:               rgba(210,15,57,0.10);
+    --error-text:             #d20f39;
+
+    --accent-primary:         #1e66f5;
+    --accent-secondary:       #8839ef;
+    --accent-tertiary:        #7287fd;
+    --accent-on-primary:      #eff1f5;
+}
+
+/* ── Monochrome ──────────────────────────────────────────────────────────────*/
+[data-theme="mono"] {
+    --bg-primary:             #0a0a0a;
+    --bg-secondary:           #111111;
+    --text-primary:           #e8e8e8;
+    --text-secondary:         #666666;
+    --border-color:           #2a2a2a;
+
+    --program-bg:             #111111;
+    --program-hover-bg:       rgba(255,255,255,0.05);
+    --current-program-bg:     rgba(255,255,255,0.08);
+    --current-program-border: #888888;
+
+    --button-bg:              #e0e0e0;
+    --button-hover-bg:        #ffffff;
+    --button-text:            #0a0a0a;
+
+    --controls-bg:            #0a0a0a;
+    --tooltip-bg:             #111111;
+    --tooltip-text:           #e8e8e8;
+
+    --shadow:                 rgba(0,0,0,0.95);
+    --error-bg:               rgba(255,80,80,0.10);
+    --error-text:             #ff5555;
+
+    --accent-primary:         #e0e0e0;
+    --accent-secondary:       #aaaaaa;
+    --accent-tertiary:        #ffffff;
+    --accent-on-primary:      #0a0a0a;
+}
+
+/* ── Tunarr ──────────────────────────────────────────────────────────────────*/
+[data-theme="tunarr"] {
+    --bg-primary:             #111111;
+    --bg-secondary:           #1a1a1a;
+    --text-primary:           #ffffff;
+    --text-secondary:         #888888;
+    --border-color:           #2a2a2a;
+
+    --program-bg:             #1a1a1a;
+    --program-hover-bg:       rgba(0,229,255,0.08);
+    --current-program-bg:     rgba(0,229,255,0.12);
+    --current-program-border: #00e5ff;
+
+    --button-bg:              #00e5ff;
+    --button-hover-bg:        #40efff;
+    --button-text:            #111111;
+
+    --controls-bg:            #111111;
+    --tooltip-bg:             #1a1a1a;
+    --tooltip-text:           #ffffff;
+
+    --shadow:                 rgba(0,0,0,0.95);
+    --error-bg:               rgba(240,98,146,0.15);
+    --error-text:             #f06292;
+
+    --accent-primary:         #00e5ff;
+    --accent-secondary:       #f06292;
+    --accent-tertiary:        #b39ddb;
+    --accent-on-primary:      #111111;
+}

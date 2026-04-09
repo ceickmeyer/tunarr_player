@@ -238,11 +238,7 @@ function renderFullGuideDesktop(container) {
         row.className = 'guide-row';
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
 
-        const label = document.createElement('div');
-        label.className   = 'channel-label';
-        label.textContent = channel.name;
-        label.title       = channel.name;
-        row.appendChild(label);
+        row.appendChild(buildChannelLabel(channel));
 
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
@@ -289,11 +285,7 @@ function renderFullGuideMobile(container) {
         row.className = 'guide-row';
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
 
-        const label = document.createElement('div');
-        label.className   = 'channel-label';
-        label.textContent = channel.name;
-        label.title       = channel.name;
-        row.appendChild(label);
+        row.appendChild(buildChannelLabel(channel));
 
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
