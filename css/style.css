@@ -236,14 +236,16 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 
 .program-box {
     position: absolute;
-    top: 2px;
-    bottom: 2px;
+    top: 0;
+    bottom: 0;
     padding: 0.35rem 0.55rem;
     background: var(--program-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-radius: 0;
     cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    transition: background 0.15s;
     overflow: hidden;
     box-sizing: border-box;
     z-index: 2;
@@ -268,8 +270,6 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 
 .program-box:hover {
     background: var(--program-hover-bg);
-    border-color: var(--accent-primary);
-    box-shadow: 0 2px 10px var(--shadow);
 }
 
 .program-box.now-playing {
@@ -578,15 +578,18 @@ video { width: 100%; height: 100%; display: block; }
     .guide-grid-line    { display: none; }
     .program-bg-image   { display: none !important; }
 
-    /* ---- Guide rows become cards ---- */
+    /* ---- Guide rows become flush vertical strips ---- */
     .guide-row {
         flex-direction: column;
         height: auto;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
+        border-radius: 0;
         overflow: hidden;
-        margin-bottom: 0.4rem;
+        margin-bottom: 0;
     }
+
+    .guide-row:last-child { border-bottom: none; }
 
     .channel-label {
         flex: none;
@@ -697,9 +700,9 @@ video { width: 100%; height: 100%; display: block; }
     main, main.guide-main { padding: 0; }
 
     body.player-page { height: auto; display: block; overflow: visible; }
-    body.player-page main { flex: none; overflow-y: visible; }
+    body.player-page main { flex: none; overflow-y: visible; padding: 0; }
     body.player-page .player-section { height: auto; }
-    body.player-page .video-wrapper { height: min(calc((100vw - 4rem) * 0.5625), calc(100vh - 8rem)); }
+    body.player-page .video-wrapper { height: calc(100vw * 0.5625); }
 
     .player-section { margin-bottom: 0; }
 
