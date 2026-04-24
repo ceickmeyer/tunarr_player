@@ -351,6 +351,108 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 
 /* ── Player page ─────────────────────────────────────────────────────────────*/
 
+/* Full-viewport flex column: topbar natural height, main fills rest and scrolls */
+body.player-page {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+body.player-page main {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0.75rem 2rem;
+}
+
+body.player-page .player-section {
+    height: 100%;
+    margin-bottom: 0;
+}
+
+body.player-page .video-wrapper {
+    height: 100%;
+    margin-bottom: 0;
+}
+
+.player-topbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.55rem 2rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.topbar-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.topbar-channel {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent-primary);
+    white-space: nowrap;
+}
+
+.topbar-sep {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.topbar-program {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.topbar-next-sep {
+    color: var(--text-secondary);
+    opacity: 0.5;
+    flex-shrink: 0;
+}
+
+.topbar-next {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    opacity: 0.75;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.topbar-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.topbar-reload-btn {
+    padding: 0.45rem 0.85rem;
+    background: #2a2a2a;
+    color: #e8e8e8;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s;
+}
+
+.topbar-reload-btn:hover { background: #383838; }
+
 .back-button {
     padding: 0.45rem 0.9rem;
     background: var(--button-bg);
@@ -364,15 +466,15 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 
 .back-button:hover { background: var(--button-hover-bg); color: var(--accent-on-primary); }
 
-.player-section { margin-bottom: 2rem; }
+.player-section { margin-bottom: 0.5rem; }
 
 .video-wrapper {
     background: #000;
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 0.75rem;
-    /* Natural 16:9 height, but never taller than viewport minus header+controls */
-    height: min(calc((100vw - 4rem) * 0.5625), calc(100vh - 12rem));
+    /* Natural 16:9 height, but never taller than viewport minus topbar+padding */
+    height: min(calc((100vw - 4rem) * 0.5625), calc(100vh - 8rem));
     border: 1px solid var(--border-color);
 }
 
@@ -594,6 +696,11 @@ video { width: 100%; height: 100%; display: block; }
     /* ---- Player page layout ---- */
     main, main.guide-main { padding: 0; }
 
+    body.player-page { height: auto; display: block; overflow: visible; }
+    body.player-page main { flex: none; overflow-y: visible; }
+    body.player-page .player-section { height: auto; }
+    body.player-page .video-wrapper { height: min(calc((100vw - 4rem) * 0.5625), calc(100vh - 8rem)); }
+
     .player-section { margin-bottom: 0; }
 
     .video-wrapper {
@@ -604,47 +711,26 @@ video { width: 100%; height: 100%; display: block; }
         margin-bottom: 0;
     }
 
-    /* ---- Player controls ---- */
-    .player-controls {
-        flex-direction: column;
-        gap: 0.4rem;
-        padding: 0.5rem;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
+    /* ---- Player topbar ---- */
+    .player-topbar {
+        padding: 0.55rem 0.9rem;
+        gap: 0.6rem;
     }
 
-    .stream-info {
-        width: 100%;
-        padding: 0 0 0.4rem;
-        border-bottom: 1px solid var(--border-color);
-    }
+    .topbar-sep,
+    .topbar-program,
+    .topbar-next-sep,
+    .topbar-next { display: none; }
 
-    #current-program { font-size: 0.88rem; }
-
-    .reload-btn, .pip-btn {
-        flex: 1;
-        padding: 0.6rem 0.4rem;
-        font-size: 0.82rem;
-        min-width: 0;
-        touch-action: manipulation;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.35rem;
-    }
-
-    /* ---- Player header ---- */
-    .player-header { gap: 0.6rem; }
-
-    .player-header h1 {
-        font-size: 1rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+    .topbar-channel { font-size: 1rem; }
 
     .back-button { padding: 0.45rem 0.7rem; font-size: 0.85rem; }
+
+    .pip-btn, .topbar-reload-btn {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.82rem;
+        touch-action: manipulation;
+    }
 
     /* ---- Guide section ---- */
     .guide-section { padding-top: 0; }

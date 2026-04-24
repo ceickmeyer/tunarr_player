@@ -116,11 +116,21 @@ function switchChannel(channel) {
 
 function updateCurrentProgram() {
     if (!xmltvData) return;
-    const now  = new Date();
-    const prog = getChannelPrograms(xmltvData, currentChannel.id, now, new Date(now.getTime() + 1))[0];
+    const now      = new Date();
+    const programs = getChannelPrograms(xmltvData, currentChannel.id, now, new Date(now.getTime() + 4 * 3600000));
+    const prog     = programs[0];
+    const next     = programs[1];
+
     document.getElementById('current-program').textContent = prog
         ? `${prog.title}  ·  ${formatTime(prog.start)} – ${formatTime(prog.stop)}`
         : currentChannel.name;
+
+    const nextEl  = document.getElementById('topbar-next');
+    const nextSep = document.querySelector('.topbar-next-sep');
+    if (nextEl) {
+        nextEl.textContent     = next ? `Up next: ${next.title}` : '';
+        if (nextSep) nextSep.style.visibility = next ? '' : 'hidden';
+    }
 }
 
 // ── Time-grid helpers ─────────────────────────────────────────────────────────
@@ -233,7 +243,12 @@ function renderFullGuideDesktop(container) {
     const end = windowEnd();
     const now = new Date();
 
-    for (const channel of m3uChannels) {
+    const ordered = [
+        ...m3uChannels.filter(ch => ch.id === currentChannel.id),
+        ...m3uChannels.filter(ch => ch.id !== currentChannel.id),
+    ];
+
+    for (const channel of ordered) {
         const row = document.createElement('div');
         row.className = 'guide-row';
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
@@ -282,7 +297,12 @@ function renderFullGuideDesktop(container) {
 function renderFullGuideMobile(container) {
     const now = new Date();
 
-    for (const channel of m3uChannels) {
+    const ordered = [
+        ...m3uChannels.filter(ch => ch.id === currentChannel.id),
+        ...m3uChannels.filter(ch => ch.id !== currentChannel.id),
+    ];
+
+    for (const channel of ordered) {
         const row = document.createElement('div');
         row.className = 'guide-row';
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
