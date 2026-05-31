@@ -20,6 +20,7 @@
             <span id="topbar-next" class="topbar-next"></span>
         </div>
         <div class="topbar-actions">
+            <button id="panel-toggle-btn" class="panel-toggle-btn">Info ‹</button>
             <button id="pip-btn" class="pip-btn">⧉ PiP</button>
             <button id="reload-stream" class="topbar-reload-btn">
                 <svg width="14" height="14" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +37,14 @@
                 <video id="video-player" controls></video>
             </div>
         </section>
+
+        <aside class="info-panel" id="info-panel">
+            <div class="info-panel-inner">
+                <div class="info-section" id="info-now"></div>
+                <div class="info-section" id="info-next"></div>
+                <div class="info-channels" id="info-channels"></div>
+            </div>
+        </aside>
 
         <section class="guide-section">
             <div class="guide-wrapper" id="guide-wrapper">

@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setVal('guide-hours',    cfg.guideHours  || 4);
         document.getElementById('show-bg-images').checked      = cfg.showBackgroundImages !== false;
         document.getElementById('show-channel-names').checked   = cfg.showChannelNames     !== false;
-        document.getElementById('show-channel-icons').checked   = cfg.showChannelIcons     === true;
+        document.getElementById('show-channel-icons').checked    = cfg.showChannelIcons     === true;
+        document.getElementById('show-sidebar-posters').checked  = cfg.showSidebarPosters   === true;
         document.getElementById('noctalia-theme').checked       = cfg.noctaliaTheme        !== false;
     }
 
@@ -81,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showBackgroundImages: document.getElementById('show-bg-images').checked,
             showChannelNames:     document.getElementById('show-channel-names').checked,
             showChannelIcons:     document.getElementById('show-channel-icons').checked,
+            showSidebarPosters:   document.getElementById('show-sidebar-posters').checked,
             noctaliaTheme:        document.getElementById('noctalia-theme').checked,
             colorTheme:           document.querySelector('.theme-btn.active')?.dataset.theme || 'mocha',
         };

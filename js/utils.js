@@ -9,6 +9,7 @@ const CONFIG = {
     noctaliaTheme:        true,
     showChannelNames:     true,
     showChannelIcons:     false,
+    showSidebarPosters:   false,
     colorTheme:           'mocha',
 };
 
@@ -44,6 +45,7 @@ function _applyConfig(cfg) {
     CONFIG.noctaliaTheme        = cfg.noctaliaTheme         !== false;
     CONFIG.showChannelNames     = cfg.showChannelNames      !== false;
     CONFIG.showChannelIcons     = cfg.showChannelIcons      === true;
+    CONFIG.showSidebarPosters   = cfg.showSidebarPosters    === true;
     CONFIG.colorTheme           = cfg.colorTheme            || 'mocha';
     applyColorTheme(CONFIG.colorTheme);
 }

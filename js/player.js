@@ -29,6 +29,7 @@ async function initializePlayer() {
 
     document.getElementById('reload-stream').addEventListener('click', reloadStream);
     setupPiP();
+    setupPanelToggle();
     document.getElementById('channel-name').textContent = currentChannel.name;
 
     updateCurrentProgram();
@@ -108,7 +109,12 @@ function switchChannel(channel) {
     if (hls) { hls.destroy(); hls = null; }
     setupVideoPlayer(channel.url);
     updateCurrentProgram();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isMobile()) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        const inner = document.querySelector('.info-panel-inner');
+        if (inner) inner.scrollTop = 0;
+    }
     renderFullGuide();
 }
 
@@ -131,6 +137,8 @@ function updateCurrentProgram() {
         nextEl.textContent     = next ? `Up next: ${next.title}` : '';
         if (nextSep) nextSep.style.visibility = next ? '' : 'hidden';
     }
+
+    renderInfoPanel();
 }
 
 // ── Time-grid helpers ─────────────────────────────────────────────────────────
@@ -226,17 +234,11 @@ function isMobile() {
 
 function renderFullGuide() {
     if (!xmltvData || !m3uChannels.length) return;
+    if (!isMobile()) return; // desktop uses the info panel instead
 
     const container = document.getElementById('guide-container');
     container.innerHTML = '';
-
-    if (isMobile()) {
-        renderFullGuideMobile(container);
-    } else {
-        renderFullGuideDesktop(container);
-        renderGridLines();
-        updateTimeIndicator();
-    }
+    renderFullGuideMobile(container);
 }
 
 function renderFullGuideDesktop(container) {
@@ -350,4 +352,183 @@ function renderFullGuideMobile(container) {
 function showError(message) {
     const section = document.querySelector('.player-section');
     if (section) section.innerHTML = `<div class="error">${message}</div>`;
+}
+
+// ── Desktop info panel ────────────────────────────────────────────────────────
+
+function renderInfoPanel() {
+    if (isMobile() || !xmltvData) return;
+
+    const now      = new Date();
+    const lookahead = new Date(now.getTime() + 8 * 3600000);
+
+    // Now Playing + Up Next for the active channel
+    const programs = getChannelPrograms(xmltvData, currentChannel.id, now, lookahead);
+    const current  = programs[0];
+    const next     = programs[1];
+
+    const nowEl = document.getElementById('info-now');
+    if (nowEl) {
+        if (current) {
+            const elapsed  = now - current.start;
+            const duration = current.stop - current.start;
+            const pct      = Math.min(100, Math.max(0, (elapsed / duration) * 100));
+            const minsLeft = Math.round((current.stop - now) / 60000);
+            nowEl.innerHTML = `
+                <div class="info-label">Now Playing</div>
+                <div class="info-now-layout">
+                    ${current.image ? `<img class="info-poster" src="${current.image}" alt="" loading="lazy">` : ''}
+                    <div class="info-now-text">
+                        <div class="info-prog-title">${current.title}</div>
+                        <div class="info-prog-time">${formatTime(current.start)} – ${formatTime(current.stop)}</div>
+                        <div class="info-progress"><div class="info-progress-fill" style="width:${pct}%"></div></div>
+                        <div class="info-mins-left">${minsLeft} min left</div>
+                        ${next ? `<div class="info-upnext-row">
+                            <span class="info-upnext-label">Up Next</span>
+                            <span class="info-upnext-title">${next.title}</span>
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+        } else {
+            nowEl.innerHTML = `
+                <div class="info-label">Now Playing</div>
+                <div class="info-prog-title">${currentChannel.name}</div>
+            `;
+        }
+    }
+
+    const nextEl = document.getElementById('info-next');
+    if (nextEl) nextEl.innerHTML = '';
+
+    // Channel list — active channel floated to top
+    const channelsEl = document.getElementById('info-channels');
+    if (!channelsEl || !m3uChannels.length) return;
+
+    const ordered = [
+        ...m3uChannels.filter(ch => ch.id === currentChannel.id),
+        ...m3uChannels.filter(ch => ch.id !== currentChannel.id),
+    ];
+
+    channelsEl.innerHTML = '<div class="info-channels-label">Channels</div>';
+
+    for (const ch of ordered) {
+        const chProgs  = getChannelPrograms(xmltvData, ch.id, now, new Date(now.getTime() + 6 * 3600000));
+        const prog     = chProgs[0];
+        const nextProg = chProgs[1];
+        const isActive = ch.id === currentChannel.id;
+
+        let pct = 0;
+        if (prog) {
+            const elapsed  = now - prog.start;
+            const duration = prog.stop - prog.start;
+            pct = Math.min(100, Math.max(0, (elapsed / duration) * 100));
+        }
+
+        const thumbHtml = (CONFIG.showSidebarPosters && prog && prog.image)
+            ? `<img class="info-ch-thumb" src="${prog.image}" alt="" loading="lazy">`
+            : '';
+
+        let iconHtml = '';
+        if (CONFIG.showChannelIcons) {
+            const iconContent = ch.logo
+                ? `<img class="info-ch-icon" src="${ch.logo}" alt="">`
+                : DEFAULT_CHANNEL_ICON_SVG;
+            iconHtml = `<div class="info-ch-icon-wrap">${iconContent}</div>`;
+        }
+
+        const item = document.createElement('div');
+        item.className = 'info-channel-item' + (isActive ? ' active' : '');
+        item.innerHTML = `
+            ${thumbHtml}
+            ${iconHtml}
+            <div class="info-ch-details">
+                <div class="info-ch-name">${ch.name}</div>
+                ${prog ? `<div class="info-ch-prog">${prog.title}</div>` : ''}
+                ${prog ? `<div class="info-ch-progress"><div class="info-ch-progress-fill" style="width:${pct}%"></div></div>` : ''}
+            </div>
+        `;
+        if (!isActive) item.addEventListener('click', () => switchChannel(ch));
+        attachChannelTooltip(item, ch, prog, nextProg);
+        channelsEl.appendChild(item);
+    }
+}
+
+function attachChannelTooltip(item, ch, nowProg, nextProg) {
+    item.addEventListener('mouseenter', () => {
+        const tip = document.getElementById('global-tooltip');
+        if (!tip) return;
+
+        const imageHtml = (CONFIG.showBackgroundImages && nowProg && nowProg.image)
+            ? `<img src="${nowProg.image}" alt="">`
+            : '';
+
+        const metaHtml = nowProg
+            ? `<div class="tip-meta">
+                   <span>${formatTime(nowProg.start)} – ${formatTime(nowProg.stop)}</span>
+                   <span>${formatDuration(nowProg.start, nowProg.stop)}</span>
+                   ${nowProg.rating ? `<span>${nowProg.rating}</span>` : ''}
+               </div>`
+            : '';
+
+        const upNextHtml = nextProg
+            ? `<div class="tip-upnext">
+                   <span class="tip-upnext-label">Up Next</span>
+                   <span class="tip-upnext-title">${nextProg.title}</span>
+                   <span class="tip-upnext-time">${formatTime(nextProg.start)}</span>
+               </div>`
+            : '';
+
+        tip.innerHTML = `
+            <div class="tip-channel">${ch.name}</div>
+            <h3>${nowProg ? nowProg.title : ch.name}</h3>
+            ${imageHtml}
+            ${nowProg && nowProg.desc ? `<p>${nowProg.desc}</p>` : ''}
+            ${metaHtml}
+            ${upNextHtml}
+        `;
+
+        tip.style.display = 'block';
+        tip.style.top  = '-9999px';
+        tip.style.left = '-9999px';
+
+        requestAnimationFrame(() => {
+            const rect  = item.getBoundingClientRect();
+            const tRect = tip.getBoundingClientRect();
+            // Open to the left of the panel
+            let left = rect.left - tRect.width - 12;
+            let top  = rect.top;
+            if (left < 8) left = rect.right + 12; // fallback: right side
+            top = Math.max(8, Math.min(top, window.innerHeight - tRect.height - 8));
+            tip.style.top  = `${top}px`;
+            tip.style.left = `${left}px`;
+        });
+    });
+
+    item.addEventListener('mouseleave', () => {
+        const tip = document.getElementById('global-tooltip');
+        if (tip) tip.style.display = 'none';
+    });
+}
+
+function setupPanelToggle() {
+    const btn = document.getElementById('panel-toggle-btn');
+    if (!btn) return;
+
+    if (localStorage.getItem('tunarr_panel_collapsed') === 'true') {
+        document.body.classList.add('panel-collapsed');
+    }
+    syncPanelToggleLabel(btn);
+
+    btn.addEventListener('click', () => {
+        document.body.classList.toggle('panel-collapsed');
+        localStorage.setItem('tunarr_panel_collapsed', document.body.classList.contains('panel-collapsed'));
+        syncPanelToggleLabel(btn);
+    });
+}
+
+function syncPanelToggleLabel(btn) {
+    const collapsed = document.body.classList.contains('panel-collapsed');
+    btn.textContent = collapsed ? 'Info ›' : 'Info ‹';
+    btn.title       = collapsed ? 'Show info panel' : 'Hide info panel';
 }
