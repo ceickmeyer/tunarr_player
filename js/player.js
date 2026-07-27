@@ -527,8 +527,12 @@ function setupPanelToggle() {
     });
 }
 
+const PANEL_TOGGLE_EXPAND_ICON = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path d="M21.414 5h-2v14h2V5Z"></path><path fill-rule="evenodd" d="M8.707 5.293 2 12l6.707 6.707 1.414-1.414L5.828 13h11.586v-2H5.828l4.293-4.293-1.414-1.414Z" clip-rule="evenodd"></path></svg>';
+const PANEL_TOGGLE_COLLAPSE_ICON = '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" role="presentation"><path d="M3 5h2v14H3V5Zm19.414 7-6.707-6.707-1.414 1.414L18.586 11H7v2h11.586l-4.293 4.293 1.414 1.414L22.414 12Z"></path></svg>';
+
 function syncPanelToggleLabel(btn) {
     const collapsed = document.body.classList.contains('panel-collapsed');
-    btn.textContent = collapsed ? 'Info ›' : 'Info ‹';
+    btn.innerHTML = collapsed ? PANEL_TOGGLE_EXPAND_ICON : PANEL_TOGGLE_COLLAPSE_ICON;
     btn.title       = collapsed ? 'Show info panel' : 'Hide info panel';
+    btn.setAttribute('aria-label', btn.title);
 }
