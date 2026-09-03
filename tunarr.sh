@@ -2,7 +2,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="/tmp/tunarr-player.pid"
-PORT=8000
+PORT=8002
 FIREFOX_CLASS="WebApp-TunarrPlayer"
 FIREFOX_PROFILE="$HOME/.local/share/ice/firefox/tunarr-player"
 
@@ -18,7 +18,7 @@ if is_running; then
 else
     rm -f "$PID_FILE"
     cd "$SCRIPT_DIR"
-    python server.py >/tmp/tunarr-server.log 2>&1 &
+    python3 server.py >/tmp/tunarr-server.log 2>&1 &
     echo $! > "$PID_FILE"
 
     for i in {1..10}; do

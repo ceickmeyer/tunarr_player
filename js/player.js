@@ -24,6 +24,11 @@ async function initializePlayer() {
 
     [xmltvData, m3uChannels] = await Promise.all([fetchXMLTVData(), fetchM3UData()]);
 
+    // sessionStorage can hold a stale channel (e.g. an old stream URL) from
+    // before a config/proxy change — always prefer the freshly fetched copy.
+    const fresh = m3uChannels.find(ch => ch.id === currentChannel.id);
+    if (fresh) currentChannel = fresh;
+
     videoElement = document.getElementById('video-player');
     setupVideoPlayer(currentChannel.url);
 
