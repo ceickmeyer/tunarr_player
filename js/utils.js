@@ -1,5 +1,6 @@
 // Configuration — defaults, overridden by loadConfig()
 const CONFIG = {
+    serverUrl:            '',
     xmltvUrl:             '',
     m3uUrl:               '',
     guideHours:           4,
@@ -38,6 +39,7 @@ async function loadConfig() {
 }
 
 function _applyConfig(cfg) {
+    CONFIG.serverUrl            = (cfg.serverUrl || '').replace(/\/$/, '');
     CONFIG.xmltvUrl             = cfg.xmltvUrl;
     CONFIG.m3uUrl               = cfg.m3uUrl;
     CONFIG.guideHours           = cfg.guideHours           || 4;
@@ -93,6 +95,15 @@ function buildChannelLabel(channel) {
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
+// Tunarr doesn't send CORS headers, so requests to it must go through the
+// local server's /proxy passthrough (same-origin) instead of hitting it directly.
+function toProxyUrl(url) {
+    if (CONFIG.serverUrl && url && url.startsWith(CONFIG.serverUrl)) {
+        return '/proxy' + url.slice(CONFIG.serverUrl.length);
+    }
+    return url;
+}
+
 async function fetchXMLTVData() {
     try {
         const cached = localStorage.getItem('tunarr_xmltv');
@@ -103,7 +114,7 @@ async function fetchXMLTVData() {
                 if (!xmlDoc.getElementsByTagName('parsererror').length) return xmlDoc;
             }
         }
-        const response = await fetch(CONFIG.xmltvUrl);
+        const response = await fetch(toProxyUrl(CONFIG.xmltvUrl));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
         localStorage.setItem('tunarr_xmltv', JSON.stringify({ ts: Date.now(), text }));
@@ -123,7 +134,7 @@ async function fetchM3UData() {
             const { ts, channels } = JSON.parse(cached);
             if (Date.now() - ts < CONFIG.cacheTTL) return channels;
         }
-        const response = await fetch(CONFIG.m3uUrl);
+        const response = await fetch(toProxyUrl(CONFIG.m3uUrl));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const channels = parseM3U(await response.text());
         localStorage.setItem('tunarr_m3u', JSON.stringify({ ts: Date.now(), channels }));
@@ -146,7 +157,7 @@ function parseM3U(m3uText) {
                     id:   (line.match(/tvg-id="([^"]+)"/)   || [])[1] || '',
                     name: (line.match(/tvg-name="([^"]+)"/) || [])[1] || 'Unknown',
                     logo: (line.match(/tvg-logo="([^"]+)"/) || [])[1] || '',
-                    url:  nextLine,
+                    url:  toProxyUrl(nextLine),
                 });
                 i++;
             }

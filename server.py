@@ -8,9 +8,23 @@ import json
 import os
 import sys
 
-TUNARR_BASE = 'http://192.168.0.26:8001'
+TUNARR_BASE_DEFAULT = 'http://192.168.0.26:8001'
 PROXY_PREFIX = '/proxy'
 PORT = 8002
+
+
+def get_tunarr_base():
+    """Read the configured Tunarr server URL from config.json, falling back to the default."""
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+    try:
+        with open(config_path, 'rb') as f:
+            cfg = json.load(f)
+        server_url = cfg.get('serverUrl', '').rstrip('/')
+        if server_url:
+            return server_url
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return TUNARR_BASE_DEFAULT
 
 
 class TunarrHandler(http.server.SimpleHTTPRequestHandler):
@@ -60,11 +74,22 @@ class TunarrHandler(http.server.SimpleHTTPRequestHandler):
         elif self.path.startswith(PROXY_PREFIX):
             # Strip /proxy prefix and forward to Tunarr
             upstream_path = self.path[len(PROXY_PREFIX):]
-            upstream_url = TUNARR_BASE + upstream_path
+            upstream_url = get_tunarr_base() + upstream_path
             try:
                 with urllib.request.urlopen(upstream_url) as resp:
                     data = resp.read()
                     content_type = resp.headers.get('Content-Type', 'application/octet-stream')
+                    if 'mpegurl' in content_type.lower() or upstream_path.endswith('.m3u8'):
+                        # Tunarr's HLS playlists reference sub-playlists/segments by
+                        # absolute path (e.g. /stream/channels/...). Left as-is, the
+                        # browser resolves those against our own origin and loses the
+                        # /proxy prefix, so rewrite them to keep routing through it.
+                        text = data.decode('utf-8')
+                        text = '\n'.join(
+                            PROXY_PREFIX + line if line.startswith('/') else line
+                            for line in text.split('\n')
+                        )
+                        data = text.encode('utf-8')
                     self.send_response(200)
                     self.send_header('Content-Type', content_type)
                     self.send_header('Content-Length', str(len(data)))
@@ -84,7 +109,7 @@ if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     with http.server.HTTPServer(('', PORT), TunarrHandler) as httpd:
         print(f'Tunarr player running at http://localhost:{PORT}')
-        print(f'Proxying Tunarr API from {TUNARR_BASE}')
+        print(f'Proxying Tunarr API from {get_tunarr_base()}')
         print('Press Ctrl+C to stop.')
         try:
             httpd.serve_forever()

@@ -43,11 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('test-btn').addEventListener('click', async () => {
         const xmltvUrl = document.getElementById('xmltv-url').value.trim();
         const m3uUrl   = document.getElementById('m3u-url').value.trim();
+        const server   = document.getElementById('server-url').value.trim().replace(/\/$/, '');
         if (!xmltvUrl || !m3uUrl) { setStatus('Fill in URLs first', 'error'); return; }
+
+        // Tunarr doesn't send CORS headers, so test through the local /proxy passthrough.
+        const toProxy = url => (server && url.startsWith(server)) ? '/proxy' + url.slice(server.length) : url;
 
         setStatus('Testing…', '');
         try {
-            const [xr, mr] = await Promise.all([fetch(xmltvUrl), fetch(m3uUrl)]);
+            const [xr, mr] = await Promise.all([fetch(toProxy(xmltvUrl)), fetch(toProxy(m3uUrl))]);
             if (xr.ok && mr.ok) {
                 setStatus('Connection successful ✓', 'ok');
             } else {
