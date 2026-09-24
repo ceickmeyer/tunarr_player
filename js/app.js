@@ -135,6 +135,7 @@ function renderGuideDesktop(container) {
     for (const channel of m3uChannels) {
         const row = document.createElement('div');
         row.className = 'guide-row';
+        row.style.setProperty('--channel-accent', channelAccentVar(channel));
 
         const label = buildChannelLabel(channel);
         label.addEventListener('click', () => launchChannel(channel));
@@ -183,6 +184,7 @@ function renderGuideMobile(container) {
     for (const channel of m3uChannels) {
         const row = document.createElement('div');
         row.className = 'guide-row';
+        row.style.setProperty('--channel-accent', channelAccentVar(channel));
 
         const label = buildChannelLabel(channel);
         label.addEventListener('click', () => launchChannel(channel));

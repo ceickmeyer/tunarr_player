@@ -258,6 +258,7 @@ function renderFullGuideDesktop(container) {
     for (const channel of ordered) {
         const row = document.createElement('div');
         row.className = 'guide-row';
+        row.style.setProperty('--channel-accent', channelAccentVar(channel));
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
 
         const label = buildChannelLabel(channel);
@@ -312,6 +313,7 @@ function renderFullGuideMobile(container) {
     for (const channel of ordered) {
         const row = document.createElement('div');
         row.className = 'guide-row';
+        row.style.setProperty('--channel-accent', channelAccentVar(channel));
         if (channel.id === currentChannel.id) row.classList.add('active-channel');
 
         const label = buildChannelLabel(channel);
@@ -444,6 +446,7 @@ function renderInfoPanel() {
 
         const item = document.createElement('div');
         item.className = 'info-channel-item' + (isActive ? ' active' : '');
+        item.style.setProperty('--channel-accent', channelAccentVar(ch));
         item.innerHTML = `
             ${thumbHtml}
             ${iconHtml}

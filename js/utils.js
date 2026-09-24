@@ -58,10 +58,30 @@ function applyColorTheme(theme) {
 
 // ── Channel label builder ─────────────────────────────────────────────────────
 
+const CHANNEL_COLOR_COUNT = 12;
+
+// Per-channel color, cycling through the theme's --ch1.."--ch12" palette in
+// playlist order (channel.colorIndex, set once in parseM3U) so neighboring
+// channels never collide the way a hash can. Falls back to a hash only if
+// colorIndex is missing (e.g. a stale cached entry from before this existed).
+function channelAccentVar(channel) {
+    let idx = channel.colorIndex;
+    if (typeof idx !== 'number') {
+        const key = channel.id || channel.name || '';
+        let hash = 5381;
+        for (let i = 0; i < key.length; i++) {
+            hash = ((hash << 5) + hash + key.charCodeAt(i)) >>> 0;
+        }
+        idx = hash;
+    }
+    return `var(--ch${(idx % CHANNEL_COLOR_COUNT) + 1})`;
+}
+
 function buildChannelLabel(channel) {
     const label = document.createElement('div');
     label.className = 'channel-label';
     label.title = channel.name;
+    label.style.setProperty('--channel-accent', channelAccentVar(channel));
 
     if (CONFIG.showChannelIcons) {
         label.classList.add('channel-label--has-icon');
@@ -154,10 +174,11 @@ function parseM3U(m3uText) {
             const nextLine = lines[i + 1]?.trim();
             if (nextLine && !nextLine.startsWith('#')) {
                 channels.push({
-                    id:   (line.match(/tvg-id="([^"]+)"/)   || [])[1] || '',
-                    name: (line.match(/tvg-name="([^"]+)"/) || [])[1] || 'Unknown',
-                    logo: (line.match(/tvg-logo="([^"]+)"/) || [])[1] || '',
-                    url:  toProxyUrl(nextLine),
+                    id:         (line.match(/tvg-id="([^"]+)"/)   || [])[1] || '',
+                    name:       (line.match(/tvg-name="([^"]+)"/) || [])[1] || 'Unknown',
+                    logo:       (line.match(/tvg-logo="([^"]+)"/) || [])[1] || '',
+                    url:        toProxyUrl(nextLine),
+                    colorIndex: channels.length,
                 });
                 i++;
             }

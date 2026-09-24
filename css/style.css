@@ -158,12 +158,12 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
     flex: 0 0 150px;
     padding: 0.75rem 1rem;
     border-right: 1px solid var(--border-color);
-    border-left: 2px solid var(--accent-primary);
+    border-left: 2px solid var(--channel-accent, var(--accent-primary));
     font-weight: 600;
     cursor: pointer;
     transition: background 0.15s, border-left-color 0.15s, box-shadow 0.15s, color 0.15s;
     font-size: 0.88rem;
-    color: var(--accent-primary);
+    color: var(--channel-accent, var(--accent-primary));
     display: flex;
     align-items: center;
     gap: 0.45rem;
@@ -213,16 +213,13 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 }
 
 .channel-label:hover {
-    background: var(--program-hover-bg);
-    border-left-color: var(--accent-tertiary);
+    background: color-mix(in srgb, var(--channel-accent, var(--accent-primary)) 14%, var(--bg-secondary));
     box-shadow: 2px 0 8px var(--shadow);
-    color: var(--accent-tertiary);
 }
 
 .guide-row.active-channel .channel-label {
-    border-left-color: var(--accent-tertiary);
-    color: var(--accent-tertiary);
-    background: var(--current-program-bg);
+    border-left-width: 3px;
+    background: color-mix(in srgb, var(--channel-accent, var(--accent-primary)) 20%, var(--bg-secondary));
 }
 
 .timeline {
@@ -243,6 +240,7 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
+    border-left: 3px solid var(--channel-accent, var(--border-color));
     border-radius: 0;
     cursor: pointer;
     transition: background 0.15s;
@@ -273,8 +271,8 @@ main.guide-main  { padding: 0.4rem 2rem 0; }
 }
 
 .program-box.now-playing {
-    border-left: 3px solid var(--accent-primary);
-    background: var(--current-program-bg);
+    border-left-width: 5px;
+    background: color-mix(in srgb, var(--channel-accent, var(--accent-primary)) 16%, var(--program-bg));
 }
 
 .program-title {
@@ -800,11 +798,12 @@ video { width: 100%; height: 100%; display: block; }
 
     .info-channel-item:hover {
         background: var(--program-hover-bg);
+        border-left-color: var(--channel-accent, var(--accent-tertiary));
     }
 
     .info-channel-item.active {
-        border-left-color: var(--accent-tertiary);
-        background: var(--current-program-bg);
+        border-left-color: var(--channel-accent, var(--accent-tertiary));
+        background: color-mix(in srgb, var(--channel-accent, var(--accent-tertiary)) 16%, var(--bg-secondary));
         cursor: default;
     }
 
@@ -1008,7 +1007,7 @@ video { width: 100%; height: 100%; display: block; }
     }
 
     .program-box:last-child  { border-bottom: none; }
-    .program-box.now-playing { border-left: 3px solid var(--accent-primary); }
+    .program-box.now-playing { border-left: 3px solid var(--channel-accent, var(--accent-primary)); }
 
     .program-title {
         white-space: normal;

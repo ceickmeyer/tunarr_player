@@ -27,6 +27,11 @@
     --accent-secondary:       #cba6f7;
     --accent-tertiary:        #b4befe;
     --accent-on-primary:      #1e1e2e;
+
+    /* Per-channel identity colors — Catppuccin Mocha accents */
+    --ch1:  #f5e0dc; --ch2:  #f5c2e7; --ch3:  #cba6f7; --ch4:  #f38ba8;
+    --ch5:  #fab387; --ch6:  #f9e2af; --ch7:  #a6e3a1; --ch8:  #94e2d5;
+    --ch9:  #89dceb; --ch10: #74c7ec; --ch11: #89b4fa; --ch12: #b4befe;
 }
 
 body    { background: var(--bg-primary);   color: var(--text-primary); }
@@ -63,6 +68,11 @@ a:hover { color: var(--accent-tertiary); }
     --accent-secondary:       #8839ef;
     --accent-tertiary:        #7287fd;
     --accent-on-primary:      #eff1f5;
+
+    /* Per-channel identity colors — Catppuccin Latte accents */
+    --ch1:  #dc8a78; --ch2:  #ea76cb; --ch3:  #8839ef; --ch4:  #d20f39;
+    --ch5:  #fe640b; --ch6:  #df8e1d; --ch7:  #40a02b; --ch8:  #179299;
+    --ch9:  #04a5e5; --ch10: #209fb5; --ch11: #1e66f5; --ch12: #7287fd;
 }
 
 /* ── Monochrome ──────────────────────────────────────────────────────────────*/
@@ -94,6 +104,14 @@ a:hover { color: var(--accent-tertiary); }
     --accent-secondary:       #aaaaaa;
     --accent-tertiary:        #ffffff;
     --accent-on-primary:      #0a0a0a;
+
+    /* Per-channel identity colors — low-saturation to stay near-monochrome */
+    --ch1:  hsl(0,   18%, 72%); --ch2:  hsl(30,  18%, 72%);
+    --ch3:  hsl(55,  16%, 70%); --ch4:  hsl(90,  16%, 68%);
+    --ch5:  hsl(140, 16%, 68%); --ch6:  hsl(170, 18%, 68%);
+    --ch7:  hsl(195, 20%, 72%); --ch8:  hsl(215, 22%, 74%);
+    --ch9:  hsl(250, 18%, 76%); --ch10: hsl(280, 16%, 74%);
+    --ch11: hsl(315, 16%, 74%); --ch12: hsl(345, 18%, 74%);
 }
 
 /* ── Tunarr ──────────────────────────────────────────────────────────────────*/
@@ -125,4 +143,9 @@ a:hover { color: var(--accent-tertiary); }
     --accent-secondary:       #f06292;
     --accent-tertiary:        #b39ddb;
     --accent-on-primary:      #111111;
+
+    /* Per-channel identity colors */
+    --ch1:  #00e5ff; --ch2:  #f06292; --ch3:  #b39ddb; --ch4:  #ff8a65;
+    --ch5:  #ffd54f; --ch6:  #aed581; --ch7:  #4db6ac; --ch8:  #4fc3f7;
+    --ch9:  #7986cb; --ch10: #ba68c8; --ch11: #ef5350; --ch12: #a1887f;
 }
