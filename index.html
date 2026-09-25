@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark.css">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <script>(function(){var c=JSON.parse(localStorage.getItem('tunarr_config')||'{}');if(c.colorTheme)document.documentElement.setAttribute('data-theme',c.colorTheme);})()</script>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tunarr">
+    <meta name="theme-color" id="theme-color-meta" content="#1e1e2e">
+    <script>(function(){
+        var THEME_BG = {mocha:'#1e1e2e', latte:'#eff1f5', mono:'#0a0a0a', tunarr:'#111111'};
+        var c = JSON.parse(localStorage.getItem('tunarr_config') || '{}');
+        var theme = c.colorTheme || 'mocha';
+        if (c.colorTheme) document.documentElement.setAttribute('data-theme', c.colorTheme);
+        var meta = document.getElementById('theme-color-meta');
+        if (meta && THEME_BG[theme]) meta.setAttribute('content', THEME_BG[theme]);
+    })()</script>
 </head>
 <body>
     <header>

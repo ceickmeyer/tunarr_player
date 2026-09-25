@@ -1110,6 +1110,64 @@ video { width: 100%; height: 100%; display: block; }
     .guide-section { padding-top: 0; }
 }
 
+/* ── Phone landscape (player page): collapse chrome, video fills the screen ──*/
+
+@media (orientation: landscape) and (max-height: 500px) {
+    body.player-page {
+        display: block;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    body.player-page main {
+        display: block;
+        padding: 0;
+        height: 100vh;
+    }
+
+    body.player-page .player-section {
+        display: block;
+        height: 100vh;
+        padding: 0;
+    }
+
+    body.player-page .video-wrapper {
+        height: 100vh;
+        width: 100vw;
+        border: none;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    body.player-page .info-panel,
+    body.player-page .guide-section,
+    body.player-page .panel-toggle-btn { display: none; }
+
+    /* Float the topbar over the video instead of reserving its own row */
+    body.player-page .player-topbar {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 20;
+        padding: 0.3rem 0.6rem;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+        border-bottom: none;
+    }
+
+    body.player-page .topbar-sep,
+    body.player-page .topbar-program,
+    body.player-page .topbar-next-sep,
+    body.player-page .topbar-next { display: none; }
+
+    body.player-page .topbar-channel { font-size: 0.8rem; }
+
+    body.player-page .back-button,
+    body.player-page .pip-btn,
+    body.player-page .topbar-reload-btn {
+        padding: 0.3rem 0.55rem;
+        font-size: 0.75rem;
+    }
+}
+
 /* ── Config page ─────────────────────────────────────────────────────────────*/
 
 .config-wrap {
