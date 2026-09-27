@@ -22,6 +22,7 @@
         var meta = document.getElementById('theme-color-meta');
         if (meta && THEME_BG[theme]) meta.setAttribute('content', THEME_BG[theme]);
     })()</script>
+    <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
 </head>
 <body class="player-page">
 

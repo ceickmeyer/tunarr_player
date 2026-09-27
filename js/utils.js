@@ -124,13 +124,28 @@ function toProxyUrl(url) {
     return url;
 }
 
+// Tunarr's generated XMLTV occasionally contains invalid markup copied
+// verbatim from metadata without escaping, which the browser's strict XML
+// parser rejects outright:
+//   - bare "&" in actor/role fields, e.g. role="Self - Producer & Actress"
+//   - role="..." falls back to single quotes when the value contains a ",
+//     but doesn't escape a literal ' inside it, e.g.
+//     role='"Hey! What's the meaning of this?"' closes early at "What's"
+// Repair what we safely can before parsing.
+function sanitizeXml(text) {
+    text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+    text = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+    text = text.replace(/role='([^<]*)'>/g, (m, inner) => `role='${inner.replace(/'/g, '&apos;')}'>`);
+    return text;
+}
+
 async function fetchXMLTVData() {
     try {
         const cached = localStorage.getItem('tunarr_xmltv');
         if (cached) {
             const { ts, text } = JSON.parse(cached);
             if (Date.now() - ts < CONFIG.cacheTTL) {
-                const xmlDoc = new DOMParser().parseFromString(text, 'text/xml');
+                const xmlDoc = new DOMParser().parseFromString(sanitizeXml(text), 'text/xml');
                 if (!xmlDoc.getElementsByTagName('parsererror').length) return xmlDoc;
             }
         }
@@ -138,7 +153,7 @@ async function fetchXMLTVData() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
         localStorage.setItem('tunarr_xmltv', JSON.stringify({ ts: Date.now(), text }));
-        const xmlDoc = new DOMParser().parseFromString(text, 'text/xml');
+        const xmlDoc = new DOMParser().parseFromString(sanitizeXml(text), 'text/xml');
         if (xmlDoc.getElementsByTagName('parsererror').length) throw new Error('XML Parse Error');
         return xmlDoc;
     } catch (error) {
