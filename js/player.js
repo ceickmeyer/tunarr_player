@@ -35,6 +35,7 @@ async function initializePlayer() {
     document.getElementById('reload-stream').addEventListener('click', reloadStream);
     setupPiP();
     setupPanelToggle();
+    setupSleepTimer();
     document.getElementById('channel-name').textContent = currentChannel.name;
 
     updateCurrentProgram();
@@ -107,10 +108,87 @@ function reloadStream() {
     setTimeout(() => { btn.disabled = false; btn.style.opacity = ''; }, 2000);
 }
 
+// ── Sleep timer ──────────────────────────────────────────────────────────────
+
+let sleepTimerId   = null;
+let sleepTimerMins = null;
+
+function setupSleepTimer() {
+    const wrap = document.getElementById('sleep-timer');
+    const toggle = document.getElementById('sleep-timer-toggle');
+    if (!wrap || !toggle) return;
+
+    toggle.addEventListener('click', () => wrap.classList.toggle('expanded'));
+
+    document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) wrap.classList.remove('expanded');
+    });
+
+    document.querySelectorAll('.sleep-timer-opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mins = parseInt(btn.dataset.minutes, 10);
+            if (sleepTimerMins === mins) cancelSleepTimer();
+            else startSleepTimer(mins);
+            wrap.classList.remove('expanded');
+        });
+    });
+}
+
+function startSleepTimer(minutes) {
+    if (sleepTimerId) clearTimeout(sleepTimerId);
+    sleepTimerMins = minutes;
+    sleepTimerId   = setTimeout(stopForSleepTimer, minutes * 60000);
+    updateSleepTimerUI();
+}
+
+function cancelSleepTimer() {
+    if (sleepTimerId) clearTimeout(sleepTimerId);
+    sleepTimerId   = null;
+    sleepTimerMins = null;
+    updateSleepTimerUI();
+}
+
+function updateSleepTimerUI() {
+    const toggle = document.getElementById('sleep-timer-toggle');
+    if (!toggle) return;
+    const active = sleepTimerMins !== null;
+    toggle.classList.toggle('active', active);
+    toggle.title = active ? `Sleep timer: ${sleepTimerMins}m (click to change)` : 'Sleep timer';
+
+    document.querySelectorAll('.sleep-timer-opt').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.minutes, 10) === sleepTimerMins);
+    });
+}
+
+function stopForSleepTimer() {
+    sleepTimerId   = null;
+    sleepTimerMins = null;
+    updateSleepTimerUI();
+
+    if (hls) { hls.destroy(); hls = null; }
+    if (videoElement) {
+        videoElement.pause();
+        videoElement.removeAttribute('src');
+        videoElement.load();
+    }
+
+    const wrapper = document.querySelector('.video-wrapper');
+    if (!wrapper) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'sleep-overlay';
+    overlay.innerHTML = `<p>Sleep timer ended</p><button type="button">Resume</button>`;
+    overlay.querySelector('button').addEventListener('click', () => {
+        overlay.remove();
+        reloadStream();
+    });
+    wrapper.appendChild(overlay);
+}
+
 function switchChannel(channel) {
     currentChannel = channel;
     document.getElementById('channel-name').textContent = channel.name;
     sessionStorage.setItem('selectedChannel', JSON.stringify(channel));
+    document.querySelector('.sleep-overlay')?.remove();
     if (hls) { hls.destroy(); hls = null; }
     setupVideoPlayer(channel.url);
     updateCurrentProgram();

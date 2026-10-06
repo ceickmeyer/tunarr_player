@@ -496,6 +496,7 @@ body.player-page .video-wrapper {
 .player-section { margin-bottom: 0.5rem; }
 
 .video-wrapper {
+    position: relative;
     background: #000;
     border-radius: 8px;
     overflow: hidden;
@@ -504,6 +505,35 @@ body.player-page .video-wrapper {
     height: min(calc((100vw - 4rem) * 0.5625), calc(100vh - 8rem));
     border: 1px solid var(--border-color);
 }
+
+.sleep-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    background: rgba(0, 0, 0, 0.78);
+    color: #fff;
+    font-size: 1rem;
+    text-align: center;
+    z-index: 10;
+}
+
+.sleep-overlay button {
+    padding: 0.6rem 1.4rem;
+    background: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sleep-overlay button:hover { background: var(--button-hover-bg); }
 
 video { width: 100%; height: 100%; display: block; }
 
@@ -552,6 +582,68 @@ video { width: 100%; height: 100%; display: block; }
 
 .pip-btn:hover       { background: var(--accent-primary); color: var(--accent-on-primary); transform: scale(1.04); }
 .pip-btn.pip-active  { background: var(--accent-primary); color: var(--accent-on-primary); }
+
+/* ── Sleep timer ──────────────────────────────────────────────────────────────*/
+
+.sleep-timer {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.sleep-timer-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem;
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1.5px solid var(--accent-primary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    flex-shrink: 0;
+    touch-action: manipulation;
+}
+
+.sleep-timer-toggle svg { display: block; }
+
+.sleep-timer-toggle:hover  { background: var(--accent-primary); color: var(--accent-on-primary); transform: scale(1.04); }
+.sleep-timer-toggle.active { background: var(--accent-primary); color: var(--accent-on-primary); }
+
+.sleep-timer-options {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width 0.25s ease, opacity 0.2s ease, margin-left 0.25s ease;
+}
+
+.sleep-timer.expanded .sleep-timer-options {
+    max-width: 220px;
+    opacity: 1;
+    margin-left: 0.5rem;
+}
+
+.sleep-timer-opt {
+    padding: 0.5rem 0.65rem;
+    background: transparent;
+    color: var(--accent-primary);
+    border: 1.5px solid var(--accent-primary);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+    touch-action: manipulation;
+}
+
+.sleep-timer-opt:hover  { background: var(--accent-primary); color: var(--accent-on-primary); }
+.sleep-timer-opt.active { background: var(--accent-primary); color: var(--accent-on-primary); }
 
 .stream-info     { flex: 1; padding: 0 0.5rem; min-width: 0; }
 #current-program { font-size: 0.92rem; color: var(--accent-secondary); font-weight: 500;
@@ -1106,6 +1198,9 @@ video { width: 100%; height: 100%; display: block; }
         touch-action: manipulation;
     }
 
+    .sleep-timer-toggle { padding: 0.45rem; }
+    .sleep-timer-opt    { padding: 0.4rem 0.55rem; font-size: 0.78rem; }
+
     /* ---- Guide section ---- */
     .guide-section { padding-top: 0; }
 }
@@ -1166,6 +1261,9 @@ video { width: 100%; height: 100%; display: block; }
         padding: 0.3rem 0.55rem;
         font-size: 0.75rem;
     }
+
+    body.player-page .sleep-timer-toggle { padding: 0.3rem; }
+    body.player-page .sleep-timer-opt    { padding: 0.3rem 0.5rem; font-size: 0.72rem; }
 }
 
 /* ── Config page ─────────────────────────────────────────────────────────────*/
