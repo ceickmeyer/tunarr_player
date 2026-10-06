@@ -90,12 +90,14 @@ function setupPiP() {
         }
     });
     videoElement.addEventListener('enterpictureinpicture', () => {
-        btn.textContent = '✕ Exit PiP';
         btn.classList.add('pip-active');
+        btn.title = 'Exit picture in picture';
+        btn.setAttribute('aria-label', btn.title);
     });
     videoElement.addEventListener('leavepictureinpicture', () => {
-        btn.textContent = '⧉ Picture in Picture';
         btn.classList.remove('pip-active');
+        btn.title = 'Picture in picture';
+        btn.setAttribute('aria-label', btn.title);
     });
 }
 
