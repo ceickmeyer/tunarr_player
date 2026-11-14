@@ -33,6 +33,7 @@ async function initializePlayer() {
     setupVideoPlayer(currentChannel.url);
 
     document.getElementById('reload-stream').addEventListener('click', reloadStream);
+    document.getElementById('shuffle-btn').addEventListener('click', shuffleChannel);
     setupPiP();
     setupPanelToggle();
     setupSleepTimer();
@@ -184,6 +185,13 @@ function stopForSleepTimer() {
         reloadStream();
     });
     wrapper.appendChild(overlay);
+}
+
+function shuffleChannel() {
+    // Same as the guide's Shuffle, but never re-picks the channel already playing.
+    const pool = m3uChannels.filter(ch => ch.id !== currentChannel.id);
+    if (!pool.length) return;
+    switchChannel(pool[Math.floor(Math.random() * pool.length)]);
 }
 
 function switchChannel(channel) {

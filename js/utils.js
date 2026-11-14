@@ -152,7 +152,8 @@ async function fetchXMLTVData() {
         const response = await fetch(toProxyUrl(CONFIG.xmltvUrl));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const text = await response.text();
-        localStorage.setItem('tunarr_xmltv', JSON.stringify({ ts: Date.now(), text }));
+        try { localStorage.setItem('tunarr_xmltv', JSON.stringify({ ts: Date.now(), text })); }
+        catch { localStorage.removeItem('tunarr_xmltv'); } // too big for the cache, skip it
         const xmlDoc = new DOMParser().parseFromString(sanitizeXml(text), 'text/xml');
         if (xmlDoc.getElementsByTagName('parsererror').length) throw new Error('XML Parse Error');
         return xmlDoc;
@@ -172,7 +173,8 @@ async function fetchM3UData() {
         const response = await fetch(toProxyUrl(CONFIG.m3uUrl));
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const channels = parseM3U(await response.text());
-        localStorage.setItem('tunarr_m3u', JSON.stringify({ ts: Date.now(), channels }));
+        try { localStorage.setItem('tunarr_m3u', JSON.stringify({ ts: Date.now(), channels })); }
+        catch { localStorage.removeItem('tunarr_m3u'); } // too big for the cache, skip it
         return channels;
     } catch (error) {
         console.error('M3U Fetch Error:', error);

@@ -27,9 +27,63 @@ def get_tunarr_base():
     return TUNARR_BASE_DEFAULT
 
 
+SYNC_STATE = os.path.expanduser('~/docker/kometa/tunarr-sync.json')
+
+
+def tunarr_json(path, body=None, method='GET'):
+    data = json.dumps(body).encode() if body is not None else None
+    req = urllib.request.Request(get_tunarr_base() + path, data=data, method=method,
+                                 headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        raw = resp.read()
+    return json.loads(raw) if raw else None
+
+
+def channel_list():
+    """Every Tunarr channel, flagged with whether tunarr-sync.py made it (and from which collection)."""
+    try:
+        with open(SYNC_STATE) as f:
+            generated = {v['id'] if isinstance(v, dict) else v: k for k, v in json.load(f).items()}
+    except (FileNotFoundError, json.JSONDecodeError):
+        generated = {}
+    return [{
+        'id': c['id'], 'number': c['number'], 'name': c['name'],
+        'hidden': bool(c.get('stealth')),
+        'programCount': c.get('programCount', 0), 'duration': c.get('duration', 0),
+        'collection': generated.get(c['id']),
+    } for c in sorted(tunarr_json('/api/channels'), key=lambda c: c['number'])]
+
+
 class TunarrHandler(http.server.SimpleHTTPRequestHandler):
+    def send_json(self, obj, status=200):
+        data = json.dumps(obj).encode()
+        self.send_response(status)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Content-Length', str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
     def do_POST(self):
-        if self.path == '/config.json':
+        if self.path == '/channels-data':
+            # {"ids": [...], "hidden": bool} — flips Tunarr's "stealth" flag, which drops
+            # the channel from the M3U/XMLTV (so the guide and Plex) without deleting it.
+            try:
+                req = json.loads(self.rfile.read(int(self.headers.get('Content-Length', 0))))
+                failed = []
+                for cid in req['ids']:
+                    try:
+                        full = tunarr_json(f'/api/channels/{cid}')
+                        if bool(full.get('stealth')) != bool(req['hidden']):
+                            full['stealth'] = bool(req['hidden'])
+                            tunarr_json(f'/api/channels/{cid}', full, 'PUT')
+                    except urllib.error.URLError:
+                        failed.append(cid)
+                self.send_json({'failed': failed, 'channels': channel_list()})
+            except (json.JSONDecodeError, KeyError, TypeError) as e:
+                self.send_error(400, str(e))
+            except urllib.error.URLError as e:
+                self.send_error(502, f'Upstream error: {e}')
+        elif self.path == '/config.json':
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length)
             try:
@@ -47,7 +101,12 @@ class TunarrHandler(http.server.SimpleHTTPRequestHandler):
             self.send_error(404)
 
     def do_GET(self):
-        if self.path == '/config.json':
+        if self.path == '/channels-data':
+            try:
+                self.send_json({'channels': channel_list()})
+            except urllib.error.URLError as e:
+                self.send_error(502, f'Upstream error: {e}')
+        elif self.path == '/config.json':
             config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
             try:
                 with open(config_path, 'rb') as f:
@@ -107,7 +166,7 @@ class TunarrHandler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    with http.server.HTTPServer(('', PORT), TunarrHandler) as httpd:
+    with http.server.ThreadingHTTPServer(('', PORT), TunarrHandler) as httpd:
         print(f'Tunarr player running at http://localhost:{PORT}')
         print(f'Proxying Tunarr API from {get_tunarr_base()}')
         print('Press Ctrl+C to stop.')

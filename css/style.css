@@ -1464,3 +1464,79 @@ video { width: 100%; height: 100%; display: block; }
 
 .connection-status.ok    { color: #6dcc6d; }
 .connection-status.error { color: var(--error-text); }
+
+
+/* ── Player topbar: unified icon buttons ──────────────────────────────────────
+   One quiet ghost style for every action; accent colour only signals state
+   (PiP on, sleep timer armed). Shuffle | playback tools | layout toggle.     */
+
+body.player-page .topbar-actions { align-items: center; gap: 0.25rem; }
+
+body.player-page .topbar-actions .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transform: none;
+    transition: background 0.15s, color 0.15s;
+    touch-action: manipulation;
+}
+
+body.player-page .topbar-actions .icon-btn svg { width: 18px; height: 18px; display: block; }
+
+body.player-page .topbar-actions .icon-btn:hover {
+    background: color-mix(in srgb, var(--text-primary) 10%, transparent);
+    color: var(--text-primary);
+}
+
+body.player-page .topbar-actions .icon-btn:active { background: color-mix(in srgb, var(--text-primary) 16%, transparent); }
+
+body.player-page .topbar-actions .icon-btn:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 1px;
+}
+
+body.player-page .topbar-actions .icon-btn.pip-active,
+body.player-page .topbar-actions .icon-btn.active {
+    background: color-mix(in srgb, var(--accent-primary) 18%, transparent);
+    color: var(--accent-primary);
+}
+
+body.player-page .topbar-actions .icon-btn:disabled { opacity: 0.45; cursor: default; }
+
+body.player-page .topbar-divider {
+    width: 1px;
+    height: 20px;
+    margin: 0 0.35rem;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
+
+/* Sleep timer presets: small pills that match the ghost style */
+body.player-page .sleep-timer-opt {
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.78rem;
+}
+body.player-page .sleep-timer-opt:hover  { color: var(--text-primary); background: color-mix(in srgb, var(--text-primary) 10%, transparent); }
+body.player-page .sleep-timer-opt.active { color: var(--accent-on-primary); background: var(--accent-primary); border-color: var(--accent-primary); }
+
+/* Panel toggle is hidden at phone widths, so is its divider */
+@media (max-width: 600px) {
+    body.player-page .topbar-divider-panel { display: none; }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    body.player-page .topbar-actions .icon-btn { width: 30px; height: 30px; color: #fff; }
+    body.player-page .topbar-divider { background: rgba(255,255,255,0.3); }
+    body.player-page .topbar-divider-panel { display: none; }
+}

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tunarr Player — Channels</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" id="theme-color-meta" content="#1e1e2e">
+    <script>(function(){
+        var THEME_BG = {mocha:'#1e1e2e', latte:'#eff1f5', mono:'#0a0a0a', tunarr:'#111111'};
+        var c = JSON.parse(localStorage.getItem('tunarr_config') || '{}');
+        var theme = c.colorTheme || 'mocha';
+        if (c.colorTheme) document.documentElement.setAttribute('data-theme', c.colorTheme);
+        var meta = document.getElementById('theme-color-meta');
+        if (meta && THEME_BG[theme]) meta.setAttribute('content', THEME_BG[theme]);
+    })()</script>
+    <style>
+        .ch-wrap      { max-width: 960px; margin: 0 auto; padding: 1rem; }
+        .ch-toolbar   { position: sticky; top: 0; z-index: 5; background: var(--bg-primary);
+                        padding: 0.75rem 0; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+                        border-bottom: 1px solid var(--border-color); }
+        .ch-search    { flex: 1 1 220px; min-width: 0; padding: 0.55rem 0.75rem; border-radius: 6px;
+                        border: 1px solid var(--border-color); background: var(--bg-secondary);
+                        color: var(--text-primary); font-size: 0.95rem; }
+        .ch-seg       { display: inline-flex; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
+        .ch-seg button{ background: var(--bg-secondary); color: var(--text-secondary); border: 0;
+                        padding: 0.45rem 0.7rem; cursor: pointer; font-size: 0.85rem; }
+        .ch-seg button + button { border-left: 1px solid var(--border-color); }
+        .ch-seg button.on { background: var(--accent-primary); color: var(--accent-on-primary); }
+        .ch-summary   { width: 100%; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+                        justify-content: space-between; color: var(--text-secondary); font-size: 0.85rem; }
+        .ch-bulk      { display: flex; gap: 0.5rem; }
+        .ch-bulk button { background: var(--bg-secondary); color: var(--text-primary); cursor: pointer;
+                        border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.7rem; font-size: 0.85rem; }
+        .ch-bulk button:hover:not(:disabled) { border-color: var(--accent-primary); }
+        .ch-bulk button:disabled { opacity: 0.4; cursor: default; }
+        .ch-list      { list-style: none; margin: 0.5rem 0 0; padding: 0; }
+        .ch-row       { display: grid; grid-template-columns: 3.2rem 1fr auto; gap: 0.75rem; align-items: center;
+                        padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--border-color); cursor: pointer;
+                        user-select: none; }
+        .ch-row:hover { background: var(--program-hover-bg); }
+        .ch-row.hidden .ch-name, .ch-row.hidden .ch-num { opacity: 0.45; }
+        .ch-num       { font-variant-numeric: tabular-nums; color: var(--text-secondary); text-align: right; }
+        .ch-name      { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ch-meta      { display: block; font-size: 0.78rem; color: var(--text-secondary); }
+        .ch-tag       { font-size: 0.7rem; padding: 0.05rem 0.4rem; border-radius: 4px; margin-left: 0.4rem;
+                        border: 1px solid var(--border-color); color: var(--text-secondary); vertical-align: 1px; }
+        .ch-switch    { width: 40px; height: 22px; border-radius: 11px; background: var(--border-color);
+                        position: relative; transition: background 0.15s; flex: none; }
+        .ch-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+                        border-radius: 50%; background: var(--text-primary); transition: transform 0.15s; }
+        .ch-row:not(.hidden) .ch-switch { background: var(--accent-primary); }
+        .ch-row:not(.hidden) .ch-switch::after { transform: translateX(18px); background: var(--accent-on-primary); }
+        .ch-row.busy  { opacity: 0.6; pointer-events: none; }
+        .ch-status    { padding: 2rem 0; text-align: center; color: var(--text-secondary); }
+        .ch-status.error { color: var(--error-text); }
+        .ch-toast     { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%);
+                        background: var(--tooltip-bg); color: var(--tooltip-text); border: 1px solid var(--border-color);
+                        padding: 0.6rem 1rem; border-radius: 8px; box-shadow: 0 4px 16px var(--shadow);
+                        display: none; gap: 0.75rem; align-items: center; font-size: 0.9rem; max-width: calc(100% - 2rem); }
+        .ch-toast.show{ display: flex; }
+        .ch-toast button { background: none; border: 0; color: var(--accent-primary); cursor: pointer; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tunarr Player</h1>
+        <div class="time-display">Channels</div>
+        <nav class="header-nav">
+            <a href="index.html" class="nav-btn">← Guide</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="ch-wrap">
+            <div class="ch-toolbar">
+                <input id="search" class="ch-search" type="search" placeholder="Search channels…" autocomplete="off">
+                <div class="ch-seg" data-filter="state">
+                    <button data-v="all" class="on">All</button><button data-v="shown">Shown</button><button data-v="hidden">Hidden</button>
+                </div>
+                <div class="ch-seg" data-filter="kind">
+                    <button data-v="all" class="on">All</button><button data-v="tv">TV</button><button data-v="movie">Movies</button>
+                </div>
+                <div class="ch-seg" data-filter="origin">
+                    <button data-v="all" class="on">All</button><button data-v="mine">Mine</button><button data-v="auto">Auto</button>
+                </div>
+                <div class="ch-summary">
+                    <span id="summary"></span>
+                    <div class="ch-bulk">
+                        <button id="hide-all">Hide these</button>
+                        <button id="show-all">Show these</button>
+                    </div>
+                </div>
+            </div>
+            <ul id="list" class="ch-list"></ul>
+            <div id="status" class="ch-status">Loading channels…</div>
+        </div>
+    </main>
+
+    <div id="toast" class="ch-toast"><span id="toast-msg"></span><button id="toast-undo">Undo</button></div>
+
+    <script src="js/channels.js"></script>
+</body>
+</html>
